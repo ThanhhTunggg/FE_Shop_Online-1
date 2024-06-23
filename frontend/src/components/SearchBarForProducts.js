@@ -25,12 +25,12 @@ function SearchBarForProducts() {
                         style={{ borderRadius: '1rem' }}
                         type="text"
                         value={searchTerm}
-                        placeholder="search products"
+                        placeholder="Tìm kiếm sản phẩm"
                         className="form-control"
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <button
-                        style={{ backgroundColor: '#4444FF', width: '20%', borderRadius: '1rem' }}
+                        style={{ backgroundColor: '#4444FF', width: '15%', borderRadius: '1rem' }}
                         type="submit"
                         className="btn btn-primary ml-2 button-focus-css"
                     ><i className="fas fa-search"></i>

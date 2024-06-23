@@ -37,16 +37,16 @@ function LoginPage({ history }) {
             }}>
                 <Col xs={12} md={6}>
                     <h2 style={{ textAlign: 'center', margin: '1rem 0' }}>Đăng nhập để tiếp tục</h2>
-                    {error && <Message variant='danger'>{error}</Message>}
+                    {error && <Message variant='danger'>Email hoặc mật khẩu chưa chính xác!</Message>}
                     <Form onSubmit={submitHandler}>
                         <Form.Group controlId='username'>
                             <Form.Label style={{ fontSize: '1.2rem' }}>
-                                Email/Tên đăng nhập
+                                Email
                             </Form.Label>
                             <Form.Control
                                 style={{ borderRadius: '1rem', height: '3rem' }}
                                 type="text"
-                                placeholder="Nhập Email/Tên đăng nhập"
+                                placeholder="Nhập Email"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                             >

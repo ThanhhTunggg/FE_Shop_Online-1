@@ -6,7 +6,7 @@ import { userDetails, logout, checkTokenValidation } from '../actions/userAction
 //import { UPDATE_USER_ACCOUNT_RESET } from '../constants'
 import Message from '../components/Message'
 import { Spinner } from 'react-bootstrap'
-import {useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 
 function AccountPage() {
@@ -33,7 +33,7 @@ function AccountPage() {
         } else {
             try {
                 dispatch(checkTokenValidation())
-                dispatch(userDetails(userInfo.id))
+                dispatch(userDetails(userInfo.userId))
             } catch (error) {
                 history.push("/")
             }
@@ -50,35 +50,147 @@ function AccountPage() {
         dispatch(logout())
         history.push("/login")
         window.location.reload()
-      }
+    }
 
     const renderData = () => {
         try {
-
             return (
-                <div>
-                    {loading && <span style = {{ display: "flex" }}><h5>Getting User Information</h5><span className = "ml-2"><Spinner animation="border" /></span></span>}
+                <div style={{
+                    width: '100%',
+                    backgroundColor: 'white',
+                    borderRadius: '20px',
+                    height: '65vh',
+                    justifyContent: 'center',
+                    padding: '2rem',
+                    boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px'
+                }}>
+                    <h3 style={{
+                        textAlign: 'center',
+                        marginBottom: '2rem'
+                    }}>Thông tin tài khoản</h3>
+                    {loading && <span style={{ display: "flex" }}><h5>Getting User Information</h5><span className="ml-2"><Spinner animation="border" /></span></span>}
                     <Container>
-                        <Row className="mr-6 mb-2 border border-dark">
-                            <Col xs={2} className="p-3 bg-info text-white">Name:</Col>
-                            <Col className="p-3">{userAccDetails.username}</Col>
+                        <Row className="mr-6 mb-3"
+                            style={{
+                                boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
+                                borderRadius: '.5rem'
+                            }}>
+                            <Col xs={2} className="p-3 text-white"
+                                style={{
+                                    borderRadius: '.5rem 0 0 .5rem',
+                                    backgroundColor: '#b82d17'
+                                }}>Name:</Col>
+                            <Col className="p-3"
+                                style={{
+                                    backgroundColor: '#fff0f0',
+                                    color: '#250905',
+                                    borderRadius: '0 .5rem .5rem 0',
+                                }}
+                            >{userAccDetails.userName}</Col>
                         </Row>
-                        <Row className="mb-2 border border-dark">
-                            <Col xs={2} className="p-3 bg-info text-white">Email:</Col>
-                            <Col className="p-3">{userAccDetails.email}</Col>
+                        <Row className="mb-3"
+                            style={{
+                                boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
+                                borderRadius: '.5rem'
+                            }}
+                        >
+                            <Col xs={2} className="p-3 text-white"
+                                style={{
+                                    borderRadius: '.5rem 0 0 .5rem',
+                                    backgroundColor: '#b82d17'
+                                }}
+                            >Email:</Col>
+                            <Col className="p-3"
+                                style={{
+                                    backgroundColor: '#fff0f0',
+                                    color: '#250905',
+                                    borderRadius: '0 .5rem .5rem 0'
+                                }}
+                            >{userAccDetails.userEmail}</Col>
                         </Row>
-                        <Row className="mb-2 border border-dark">
-                            <Col xs={2} className="p-3 bg-info text-white">Admin Privileges:</Col>
-                            <Col className="p-3">{userAccDetails.admin ? "Yes" : "No"}</Col>
+                        <Row className="mb-3"
+                            style={{
+                                boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
+                                borderRadius: '.5rem'
+                            }}
+                        >
+                            <Col xs={2} className="p-3 text-white"
+                                style={{
+                                    borderRadius: '.5rem 0 0 .5rem',
+                                    backgroundColor: '#b82d17'
+                                }}
+                            >Admin Privileges:</Col>
+                            <Col className="p-3"
+                                style={{
+                                    backgroundColor: '#fff0f0',
+                                    color: '#250905',
+                                    borderRadius: '0 .5rem .5rem 0'
+                                }}
+                            >{userAccDetails.userRole === 1 ? "Yes" : "No"}</Col>
+                        </Row>
+                        <Row className="mb-3"
+                            style={{
+                                boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
+                                borderRadius: '.5rem'
+                            }}
+                        >
+                            <Col xs={2} className="p-3 text-white"
+                                style={{
+                                    borderRadius: '.5rem 0 0 .5rem',
+                                    backgroundColor: '#b82d17'
+                                }}
+                            >Phone Number:</Col>
+                            <Col className="p-3"
+                                style={{
+                                    backgroundColor: '#fff0f0',
+                                    color: '#250905',
+                                    borderRadius: '0 .5rem .5rem 0'
+                                }}
+                            >{userAccDetails.userPhone}</Col>
+                        </Row>
+                        <Row className="mb-3"
+                            style={{
+                                boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
+                                borderRadius: '.5rem'
+                            }}
+                        >
+                            <Col xs={2} className="p-3 text-white"
+                                style={{
+                                    borderRadius: '.5rem 0 0 .5rem',
+                                    backgroundColor: '#b82d17'
+                                }}
+                            >Points:</Col>
+                            <Col className="p-3"
+                                style={{
+                                    backgroundColor: '#fff0f0',
+                                    color: '#250905',
+                                    borderRadius: '0 .5rem .5rem 0'
+                                }}
+                            >{userAccDetails.userPoint}</Col>
                         </Row>
                     </Container>
-                    <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Link to={`/account/update`}>Update Account details</Link>
-                        <span className="ml-1 text-primary">| </span>
-                        <span className="ml-1"></span>
+                    <div style={{ width: '100%', marginTop: '3rem' }}>
+                        <div style={{
+                            display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%',
+                            marginTop: '1rem'
+                        }}>
+                            <Link to={`/account/update`}>
+                                <button
+                                    style={{ width: '100%', padding: '.8rem 3rem', borderRadius: '1rem' }}
+                                    class="btn btn-primary">
+                                    Cập nhật tài khoản
+                                </button>
+                            </Link>
 
-                        <Link to={`/account/delete/`}>Delete Account</Link>
-                    </span>
+                            <Link to={`/account/delete/`}>
+                                <button
+                                    style={{ width: '100%', padding: '.8rem 3rem', borderRadius: '1rem' }}
+                                    class="btn btn-danger">
+                                    Xoá tài khoản
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             )
         } catch (error) {
@@ -87,7 +199,6 @@ function AccountPage() {
             > Login</Link> page.</Message>
         }
     }
-
 
     return renderData()
 

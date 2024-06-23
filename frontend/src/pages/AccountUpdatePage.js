@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { userDetails, userUpdateDetails, checkTokenValidation, logout } from '../actions/userActions'
 import Message from '../components/Message'
 import { Spinner } from 'react-bootstrap'
-import {useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { UPDATE_USER_DETAILS_RESET } from '../constants'
 
 
@@ -13,7 +13,7 @@ function AccountUpdatePage() {
 
     let history = useHistory()
     const dispatch = useDispatch()
-  
+
 
     // check token validation reducer
     const checkTokenValidationReducer = useSelector(state => state.checkTokenValidationReducer)
@@ -49,7 +49,7 @@ function AccountUpdatePage() {
         dispatch(logout())
         history.push("/login")
         window.location.reload()
-      }
+    }
 
     const onSubmit = (e) => {
         e.preventDefault()
@@ -74,7 +74,7 @@ function AccountUpdatePage() {
         dispatch(logout()) // action        
     }
 
-    if(success) {
+    if (success) {
         alert("Account successfully updated.")
         dispatch({
             type: UPDATE_USER_DETAILS_RESET
@@ -86,14 +86,22 @@ function AccountUpdatePage() {
     const renderData = () => {
         try {
             return (
-                <div>
+                <div
+                    style={{
+                        width: '100%',
+                        backgroundColor: 'white',
+                        borderRadius: '20px',
+                        height: '65vh',
+                        justifyContent: 'center',
+                        padding: '2rem',
+                        boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px'
+                    }}>
+                    <h3 style={{
+                        textAlign: 'center',
+                        marginBottom: '2rem'
+                    }}>Cập nhật thông tin tài khoản</h3>
                     <Row className='justify-content-md-center'>
                         <Col xs={12} md={6}>
-                            <span
-                                className="d-flex justify-content-center"
-                                style={{ display: "flex", marginBottom: "15px", color: "#008080" }}>
-                                <em>Update User Details</em>
-                            </span>
                             {loading && <Spinner animation="border" />}
                             <Form onSubmit={onSubmit}>
 
@@ -148,10 +156,10 @@ function AccountUpdatePage() {
                                     </Form.Control>
                                 </Form.Group>
 
-                                <Button type="submit" variant='success' className="btn-sm">Save Changes</Button>
+                                <Button type="submit" variant='success' class="btn btn-primary mr-3">Save Changes</Button>
                                 <Link to={`/account`}>
-                                    <button className="btn btn-primary btn-sm ml-2" type="button">
-                                        Cancel
+                                    <button class="btn btn-danger pr-3 pl-3" type="button">
+                                        Huỷ
                                     </button>
                                 </Link>
                             </Form>

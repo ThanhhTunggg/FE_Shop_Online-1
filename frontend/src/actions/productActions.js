@@ -90,14 +90,14 @@ export const createProduct = (product) => async (dispatch, getState) => {
 
         const config = {
             headers: {
-                "Content-Type": "multipart/form-data",
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${userInfo.token}`
             }
         }
 
         // api call
         const { data } = await axios.post(
-            "/api/product-create/",
+            `${api}Product/AddProduct`,
             product,
             config
         )

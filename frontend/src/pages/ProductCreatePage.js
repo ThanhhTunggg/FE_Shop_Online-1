@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button, Alert } from 'react-bootstrap'
 import { createProduct } from '../actions/productActions'
 import { useHistory } from 'react-router'
 import { checkTokenValidation, logout } from '../actions/userActions'
 import { CREATE_PRODUCT_RESET } from '../constants'
 import Message from '../components/Message';
+import axios from 'axios'
+import api from '../Config/ConfigApi'
 
 
 const ProductCreatePage = () => {
@@ -16,8 +18,11 @@ const ProductCreatePage = () => {
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [price, setPrice] = useState("")
-    const [stock, setStock] = useState(false)
+    const [priceDiscount, setPriceDiscount] = useState("")
+    const [stock, setStock] = useState("")
     const [image, setImage] = useState(null)
+    const [category, setcategory] = useState(null)
+    const [categoryList, setcategoryList] = useState('')
 
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
@@ -38,22 +43,45 @@ const ProductCreatePage = () => {
         dispatch(checkTokenValidation())
     }, [dispatch, userInfo, history])
 
+    useEffect(() => {
+        LoadCategory()
+    }, [])
+
+    const LoadCategory = async () => {
+        try {
+            const { data } = await axios.get(
+                `${api}Category`
+            )
+            console.log(data)
+            setcategoryList(data)
+        } catch {
+            setcategoryList([])
+        }
+    }
+
     const onSubmit = (e) => {
         e.preventDefault()
 
-        let form_data = new FormData()
-        form_data.append('name', name)
-        form_data.append('description', description)
-        form_data.append('price', price)
-        form_data.append('stock', stock)
-        form_data.append('image', image)
-
+        let form_data = {
+            "productName": name,
+            "productPrice": price,
+            "productSalePrice": priceDiscount,
+            "productCost": price,
+            "productStock": stock,
+            "productDescription": description,
+            "productDate": "2024-06-23T08:39:10.722Z",
+            "updateAt": "2024-06-23T08:39:10.722Z",
+            "deleteAt": "2024-06-23T08:39:10.722Z",
+            "createAt": "2024-06-23T08:39:10.722Z",
+            "userId": userInfo.userId,
+            "categoryId": category
+        }
         dispatch(createProduct(form_data))
     }
 
     if (productCreationSuccess) {
         alert("Product successfully created.")
-        history.push(`/product/${product.id}/`)
+        history.push(`/product/${product}/`)
         dispatch({
             type: CREATE_PRODUCT_RESET
         })
@@ -66,20 +94,46 @@ const ProductCreatePage = () => {
         window.location.reload()
     }
 
+    const [images, setImages] = useState([]);
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length + images.length > 5) {
+            alert('You can only select up to 5 images.');
+            return;
+        }
+        const newImages = files.map(file => ({
+            file,
+            preview: URL.createObjectURL(file),
+        }));
+        setImages(prevImages => [...prevImages, ...newImages]);
+    };
+
+    const handleRemoveImage = (index) => {
+        setImages(prevImages => prevImages.filter((_, i) => i !== index));
+    };
+
     return (
-        <div>
-            {productCreationError && <Message variant='danger'>{productCreationError.image[0]}</Message>}
-            <span
-                className="d-flex justify-content-center text-info"
-                >
-                <em>New Product</em>
-            </span>
+        <div style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            height: '90vh',
+            justifyContent: 'center',
+            padding: '2rem',
+            overflowY: 'auto',
+            boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px'
+        }}>
+            {/* {productCreationError && <Message variant='danger'>{productCreationError.image[0]}</Message>} */}
+            <h3 style={{
+                textAlign: 'center'
+            }}>Thêm sản phẩm mới</h3>
             <Form onSubmit={onSubmit}>
 
                 <Form.Group controlId='name'>
                     <Form.Label>
                         <b>
-                            Product Name
+                            Tên sản phẩm
                         </b>
                     </Form.Label>
                     <Form.Control
@@ -87,7 +141,7 @@ const ProductCreatePage = () => {
                         autoFocus={true}
                         type="text"
                         value={name}
-                        placeholder="product name"
+                        placeholder="Nhập tên sản phẩm"
                         onChange={(e) => setName(e.target.value)}
                     >
                     </Form.Control>
@@ -96,14 +150,15 @@ const ProductCreatePage = () => {
                 <Form.Group controlId='description'>
                     <Form.Label>
                         <b>
-                            Product Description
+                            Mô tả sản phẩm
                         </b>
                     </Form.Label>
                     <Form.Control
                         required
-                        type="text"
+                        as="textarea"
+                        rows={3}
                         value={description}
-                        placeholder="product description"
+                        placeholder="Nhập mô tả sản phẩm"
                         onChange={(e) => setDescription(e.target.value)}
                     >
                     </Form.Control>
@@ -112,7 +167,7 @@ const ProductCreatePage = () => {
                 <Form.Group controlId='price'>
                     <Form.Label>
                         <b>
-                            Price
+                            Giá
                         </b>
                     </Form.Label>
                     <Form.Control
@@ -120,55 +175,155 @@ const ProductCreatePage = () => {
                         type="text"
                         pattern="[0-9]+(\.[0-9]{1,2})?%?"
                         value={price}
-                        placeholder="199.99"
+                        placeholder="Nhập giá VND"
                         step="0.01"
-                        maxLength="8"
                         onChange={(e) => setPrice(e.target.value)}
                     >
                     </Form.Control>
                 </Form.Group>
 
-                <span style={{ display: "flex" }}>
-                    <label>In Stock</label>
-                    <input
-                        type="checkbox"
-                        value={stock}
-                        className="ml-2 mt-2"
-                        onChange={() => setStock(!stock)}
-                    />
-                </span>
-
-                <Form.Group controlId='image'>
+                <Form.Group controlId='priceDiscount'>
                     <Form.Label>
                         <b>
-                            Product Image
+                            Giảm giá
                         </b>
                     </Form.Label>
                     <Form.Control
                         required
-                        type="file"
-                        onChange={(e) => setImage(e.target.files[0])}
+                        type="text"
+                        pattern="[0-9]+(\.[0-9]{1,2})?%?"
+                        value={priceDiscount}
+                        placeholder="Nhập giá đã giảm VND"
+                        step="0.01"
+                        onChange={(e) => setPriceDiscount(e.target.value)}
                     >
                     </Form.Control>
                 </Form.Group>
 
-                <Button
-                    type="submit"
-                    variant='success'
-                    className="btn-sm button-focus-css"
-                >
-                    Save Product
-                </Button>
-                <Button
-                    type="submit"
-                    variant='primary'
-                    className="btn-sm ml-2 button-focus-css"
+                <Form.Group controlId='priceDiscount'>
+                    <Form.Label>
+                        <b>
+                            Số lượng hàng
+                        </b>
+                    </Form.Label>
+                    <Form.Control
+                        required
+                        type="text"
+                        pattern="[0-9]+(\.[0-9]{1,2})?%?"
+                        value={stock}
+                        placeholder="Nhập giá đã giảm VND"
+                        step="1"
+                        onChange={(e) => setStock(e.target.value)}
+                    >
+                    </Form.Control>
+                </Form.Group>
+
+                <Form.Group controlId="category">
+                    <Form.Label>
+                        <b>Loại mặt hàng</b>
+                    </Form.Label>
+                    <Form.Control
+                        as="select"
+                        value={category}
+                        onChange={(e) => setcategory(e.target.value)}
+                    >
+                        <option value="">Select a category</option>
+                        {categoryList.length > 0 ? (
+                            categoryList.map((cat) => (
+                                <option key={cat.categoryId} value={cat.categoryId}>
+                                    {cat.categoryName}
+                                </option>
+                            ))
+                        ) : (
+                            <option value="" disabled>
+                                <option value="">Select a category</option>
+                            </option>
+                        )}
+                    </Form.Control>
+                </Form.Group>
+
+                {/* {category === '1' &&
+                    (<Form.Group controlId='date'>
+                        <Form.Label>
+                            <b>
+                                Hạn sử dụng
+                            </b>
+                        </Form.Label>
+                        <Form.Control
+                            required
+                            type="Date"
+                            value={price}
+                            placeholder="Nhập hạn sử dụng"
+                            onChange={(e) => setPriceDiscount(e.target.value)}
+                        >
+                        </Form.Control>
+                    </Form.Group>)
+                } */}
+
+                <Form.Group controlId="imageUpload">
+                    <Form.Label>
+                        <b>Upload Images</b>
+                    </Form.Label>
+                </Form.Group>
+                <div style={{
+                    display: 'flex',
+                }}>
+                    {images.map((image, index) => (
+                        <div key={index} xs={6} md={4} lg={3} className="mb-3"
+                            style={{
+                                width: '18%',
+                                marginRight: '.1rem',
+                            }}>
+                            <div className="image-preview">
+                                <img
+                                    src={image.preview}
+                                    alt={`Preview ${index + 1}`}
+                                    style={{ width: '100%', height: '100px', border: '1px solid black' }}
+                                />
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="mt-2"
+                                >
+                                    Remove
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <Form.Group controlId="imageUpload">
+                    <Form.Control
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        disabled={images.length >= 5}
+                    />
+                    <Form.Text className="text-muted">
+                        You can upload up to 5 images.
+                    </Form.Text>
+                </Form.Group>
+
+                <button type="submit" class="btn btn-success mr-4"
+                    style={{
+                        borderRadius: '.5rem',
+                        padding: '.5rem 2rem'
+                    }}>
+                    Thêm sản phẩm
+                </button>
+                <button type="submit" class="btn btn-danger"
+                    style={{
+                        borderRadius: '.5rem',
+                        padding: '.5rem 2rem'
+                    }}
                     onClick={() => history.push("/")}
                 >
-                    Cancel
-                </Button>
-            </Form>
-        </div>
+                    Huỷ
+                </button>
+            </Form >
+        </div >
     )
 }
 
