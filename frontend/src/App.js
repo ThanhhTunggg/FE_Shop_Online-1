@@ -26,7 +26,9 @@ const App = () => {
     <div>
       <Router>
         <NavBar />
-        <div className="container mt-4">
+        <div className="container" style={{
+                                marginTop: '5rem'
+                            }}>
           <Switch>
             <Route path="/" component={ProductListPage} exact />
             <Route path="/new-product/" component={ProductCreatePage} exact />

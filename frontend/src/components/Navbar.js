@@ -33,7 +33,14 @@ function NavBar() {
     };
 
     return (
-        <header>
+        <header style={{
+            position: 'fixed',
+            zIndex: 20,
+            width: '100%',
+            marginTop: 0,
+            paddingTop: 0,
+            top: 0
+        }}>
             <Navbar bg="Light" variant="dark" expand="lg" collapseOnSelect style={{ backgroundColor: '#FF7D29' }}>
                 <Container>
                     <LinkContainer to="/" style={{ width: '10%' }}>

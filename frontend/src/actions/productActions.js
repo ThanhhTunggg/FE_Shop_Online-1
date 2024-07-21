@@ -1,4 +1,4 @@
-import api from '../Config/ConfigApi'
+import apiRoot from '../Config/ConfigApi'
 import {
     PRODUCTS_LIST_REQUEST,
     PRODUCTS_LIST_SUCCESS,
@@ -37,7 +37,7 @@ export const getProductsList = () => async (dispatch) => {
         })
 
         // call api
-        const { data } = await axios.get(api + "Product")
+        const { data } = await axios.get(apiRoot + "Product")
         console.log(data);
         dispatch({
             type: PRODUCTS_LIST_SUCCESS,
@@ -60,7 +60,7 @@ export const getProductDetails = (id) => async (dispatch) => {
         })
 
         // call api
-        const { data } = await axios.get(api + `Product/${id}/`)
+        const { data } = await axios.get(apiRoot + `Product/${id}/`)
 
         dispatch({
             type: PRODUCT_DETAILS_SUCCESS,
@@ -97,7 +97,7 @@ export const createProduct = (product) => async (dispatch, getState) => {
 
         // api call
         const { data } = await axios.post(
-            `${api}Product/AddProduct`,
+            `${apiRoot}Product/AddProduct`,
             product,
             config
         )

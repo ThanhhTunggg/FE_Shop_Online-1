@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import api from '../Config/ConfigApi'
 import {
     CARD_CREATE_REQUEST,
     CARD_CREATE_SUCCESS,
@@ -117,6 +119,11 @@ export const chargeCustomer = (cardData) => async (dispatch, getState) => {
 export const savedCardsList = () => async (dispatch, getState) => {
 
     try {
+        const [userInfoLc, setUserInfo] = useState(null);
+        var user = localStorage.getItem('userInfo')
+        if (user) {
+            setUserInfo(JSON.parse(user));
+          }
         dispatch({
             type: SAVED_CARDS_LIST_REQUEST,
         })
@@ -133,7 +140,7 @@ export const savedCardsList = () => async (dispatch, getState) => {
         }
 
         // api call
-        const { data } = await axios.get('/account/stripe-cards/', config)
+        const { data } = await axios.get(api + `Cart/${userInfoLc.userId}`, config)
 
         dispatch({
             type: SAVED_CARDS_LIST_SUCCESS,

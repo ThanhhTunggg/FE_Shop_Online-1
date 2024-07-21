@@ -1,4 +1,4 @@
-import api from '../Config/ConfigApi'
+import apiRoot from '../Config/ConfigApi'
 import {
     USER_LOGIN_REQUEST,
     USER_LOGIN_SUCCESS,
@@ -69,7 +69,7 @@ export const login = (username, password) => async (dispatch) => {
         }
 
         const { data } = await axios.post(
-            api + `User?userEmail=${username}&password=${password}`,
+            apiRoot + `User?userEmail=${username}&password=${password}`,
             { 'username': username, 'password': password },
             config
         )
@@ -195,7 +195,7 @@ export const userDetails = (id) => async (dispatch, getState) => {
         }
 
         // call api
-        const { data } = await axios.get(api + `User/GetUserById/${id}`, config)
+        const { data } = await axios.get(apiRoot + `User/GetUserById/${id}`, config)
 
         dispatch({
             type: USER_DETAILS_SUCCESS,

@@ -29,7 +29,7 @@ function ProductsListPage() {
     const showNothingMessage = () => {
         return (
             <div>
-                {!loading ? <Message variant='info'>Nothing to show</Message> : ""}                
+                {!loading ? <Message variant='info'>Nothing to show</Message> : ""}
             </div>
         )
     }
@@ -45,18 +45,13 @@ function ProductsListPage() {
             </span>}
             <div>
                 <Row>
-
-                    {/* If length of the filter result is equal to 0 then show 'nothing found' message
-                        with help of showNothingMessage function else show the filtered result on the
-                        webpage and then run the map function */}
-
                     {(products.filter((item) =>
                         item.productName.toLowerCase().includes(searchTerm !== "" ? searchTerm.split("=")[1] : "")
                     )).length === 0 ? showNothingMessage() : (products.filter((item) =>
                         item.productName.toLowerCase().includes(searchTerm !== "" ? searchTerm.split("=")[1] : "")
                     )).map((product, idx) => (
                         <Col key={product.productId} sm={12} md={6} lg={4} xl={3}>
-                            <div className="mx-2"> 
+                            <div className="mx-2">
                                 <Product product={product} />
                             </div>
                         </Col>

@@ -5,11 +5,15 @@ import Message from '../components/Message'
 import { Spinner, Row, Col, Container, Card, Button, Modal } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { CREATE_PRODUCT_RESET, DELETE_PRODUCT_RESET, UPDATE_PRODUCT_RESET, CARD_CREATE_RESET } from '../constants'
-
+import axios from 'axios'
+import { notification, Space } from 'antd';
+import apiRoot from '../Config/ConfigApi'
 
 function ProductDetailsPage({ history, match }) {
 
     const dispatch = useDispatch()
+
+    const [amount, setAmount] = useState(1)
 
     // modal state and functions
     const [show, setShow] = useState(false);
@@ -56,9 +60,55 @@ function ProductDetailsPage({ history, match }) {
         })
     }
 
+    const [api, contextHolder] = notification.useNotification();
+
+    const AddCart = async (id) => {
+        try {
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+
+            const cardData = {
+                id: userInfo.userId,
+                productId: id,
+                detailProductId: 1,
+                amount: amount
+            }
+            // api call
+            const { data } = await axios.post(
+                `${apiRoot}Cart/AddCart`,
+                cardData,
+                config
+            )
+            api['success']({
+                message: 'Thêm thành công',
+                description:
+                  'Sản phẩm đã được thêm thành công vào giỏ hàng',
+              });
+        } catch (error) {
+            console.error("Error fetching cart data:", error);
+        }
+    }
+
+    const handleButtonAdd = (max) => {
+        var value = (amount + 1) > max ? max : (amount + 1)
+        setAmount(value);
+    };
+
+    const handleButtonSub = () => {
+        var value = (amount - 1) < 1 ? 1 : (amount - 1)
+        setAmount(value);
+    };
+
+    const handleInputChange = (event) => {
+        setAmount(event.target.value);
+    };
+
     return (
         <div>
-
+            {contextHolder}
             {/* Modal Start*/}
             <div>
                 <Modal show={show} onHide={handleClose}>
@@ -132,11 +182,55 @@ function ProductDetailsPage({ history, match }) {
                                     display: "flex",
                                     justifyContent: "left",
                                     padding: "2px",
-                                    height: '71%',
+                                    height: '50%',
                                     marginBottom: '2rem'
                                 }}>
                                     Price:<span className="text-success ml-2">{product.productSalePrice} VND</span>
                                 </span>
+
+                                <span style={{
+                                    display: "flex",
+                                    justifyContent: "left",
+                                    padding: "2px",
+                                    alignItems: 'center'
+                                }}>
+                                    <p style={{
+                                        padding: 0,
+                                        margin: '0 1rem'
+                                    }}>Số lượng</p>
+                                    <button style={{
+                                        width: '30px',
+                                        border: '1px solid lightgrey',
+                                        borderRadius: '2px 0 0 2px',
+                                        fontSize: '20px',
+                                        justifyContent: 'center',
+                                        backgroundColor: 'white'
+                                    }} onClick={handleButtonSub}>-</button>
+                                    <input disabled value={amount} onChange={handleInputChange}
+                                        style={{
+                                            width: '50px',
+                                            outline: 'none',
+                                            border: '1px solid lightgrey',
+                                            backgroundColor: 'white',
+                                            textAlign: 'center',
+                                            fontSize: '20px'
+                                        }}
+                                    />
+                                    <button style={{
+                                        width: '30px',
+                                        border: '1px solid lightgrey',
+                                        borderRadius: '0 2px 2px 0',
+                                        fontSize: '20px',
+                                        justifyContent: 'center',
+                                        backgroundColor: 'white'
+                                    }} onClick={() => handleButtonAdd(product.productStock)}>+</button>
+
+                                    <p style={{
+                                        padding: 0,
+                                        margin: '0 1rem'
+                                    }}>{product.productStock}</p>
+                                </span>
+
                                 <span style={{
                                     display: "flex",
                                     justifyContent: "left",
@@ -220,21 +314,20 @@ function ProductDetailsPage({ history, match }) {
                                                         </button>
                                                     </Link>
 
-                                                    <Link to={`${product.productId}/checkout/`}
+
+                                                    <button className="btn btn-primary"
                                                         style={{
-                                                            width: '50%'
-                                                        }}>
-                                                        <button className="btn btn-primary"
-                                                            style={{
-                                                                backgroundColor: 'RGBA(240, 93, 64, 0.2)',
-                                                                border: '1px solid #f05d40',
-                                                                width: '100%',
-                                                                color: '#ee4d2d'
-                                                            }}
-                                                        >
-                                                            Thêm vào giỏ hàng
-                                                        </button>
-                                                    </Link>
+                                                            backgroundColor: 'RGBA(240, 93, 64, 0.2)',
+                                                            border: '1px solid #f05d40',
+                                                            width: '50%',
+                                                            color: '#ee4d2d'
+                                                        }}
+                                                        onClick={() => {
+                                                            AddCart(product.productId)
+                                                        }}
+                                                    >
+                                                        Thêm vào giỏ hàng
+                                                    </button>
                                                 </div>
                                                 :
                                                 <div className='alert alert-danger' role="alert"
