@@ -24,6 +24,7 @@ import {
 } from '../constants/index'
 
 import axios from 'axios'
+import apiRoot from '../Config/ConfigApi'
 
 // create card
 export const createCard = (cardData) => async (dispatch, getState) => {
@@ -210,18 +211,9 @@ export const deleteSavedCard = (card_number) => async (dispatch, getState) => {
             userLoginReducer: { userInfo }
         } = getState()
 
-        const config = {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${userInfo.token}`
-            }
-        }
-
         // api call
-        const { data } = await axios.post(
-            '/payments/delete-card/',
-            { "card_number": card_number },
-            config
+        const { data } = await axios.delete(
+            apiRoot + `Cart/DeleteCart/${card_number}`
         )
 
         dispatch({

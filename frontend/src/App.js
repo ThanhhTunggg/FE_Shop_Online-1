@@ -26,9 +26,11 @@ const App = () => {
     <div>
       <Router>
         <NavBar />
-        <div className="container" style={{
-                                marginTop: '5rem'
-                            }}>
+        <div style={{
+          marginTop: '5rem',
+          padding: '0',
+          width: '100%',
+        }}>
           <Switch>
             <Route path="/" component={ProductListPage} exact />
             <Route path="/new-product/" component={ProductCreatePage} exact />
@@ -42,6 +44,7 @@ const App = () => {
             <Route path="/account/update/" component={AccountUpdatePage} exact />
             <Route path="/account/delete/" component={DeleteUserAccountPage} exact />
             <Route path="/stripe-card-details" component={CardDetailsPage} exact />
+            <Route path="/stripe-card-details/checkout" component={CheckoutPage} exact />
             <Route path="/stripe-card-update" component={CardUpdatePage} exact />
             <Route path="/all-addresses/" component={AllAddressesOfUserPage} exact />
             <Route path="/all-addresses/:id/" component={AddressUpdatePage} exact />
@@ -50,7 +53,7 @@ const App = () => {
           </Switch>
         </div>
       </Router>
-    </div >
+    </div>
   )
 }
 

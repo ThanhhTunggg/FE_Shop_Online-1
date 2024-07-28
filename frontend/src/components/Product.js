@@ -2,39 +2,61 @@ import { Card } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 function Product({ product }) {
     const [imageProduct, setImageProduct] = useState("https://product.hstatic.net/1000362139/product/blog_large_75e6f17c0d894a3191a1bc05ca645705.jpg")
+    // login reducer
+    const userLoginReducer = useSelector(state => state.userLoginReducer)
+    const { userInfo } = userLoginReducer
+
+
     return (
         <div>
-            <div className="mb-4 rounded"
+            <div className="mb-3 rounded detailPro"
                 style={{
                     backgroundColor: 'white',
-                    borderRadius: '1rem',
-                    boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
                     width: '100%',
-                    border: '1px solid #ffd8bf',
-                    borderRadius: '2rem'
+                    border: '2px solid lightgrey',
+                    borderRadius: '2rem',
+                    padding: '.2rem .2rem .5rem .2rem'
                 }}
             >
-                <Card.Body>
+                <div style={{
+
+                }}>
                     <Link to={`/product/${product.productId}`} >
                         <Card.Img variant="top" src={imageProduct} height="170" />
                     </Link>
                     <Link to={`/product/${product.productId}`}>
-                        <Card.Title as="h7" style={{borderTop:'1px solid grey', width: '100'}}>
-                            <strong>{product.productName}</strong>
-                        </Card.Title>
+                        <p style={{ borderTop: '1px solid grey', width: '100' }}>
+                            <p style={{
+                                overflow: 'hidden',
+                                color: 'black',
+                                margin: '.5rem 0 1rem 0',
+                                textWrap: 'nowrap',
+                                padding: '0 .5rem 0 0'
+                            }}>{product.productName}</p>
+                        </p>
                     </Link>
 
-                    <Card.Text as="p" style={{margin: 0, fontSize: '1.1rem', fontWeight: '500'}}>
-                        {product.productSalePrice} vnd
-                    </Card.Text>
-                    
-                    <Card.Text as="p" style={{textDecoration: 'line-through', color: 'red', margin: '0'}}>
-                        {product.productPrice} vnd
-                    </Card.Text>
-                </Card.Body>
+                    <Link to={`/product/${product.productId}`}>
+                        {userInfo && userInfo.userRole === 1 ?
+                            <p style={{
+                                margin: 0,
+                                backgroundColor: 'orange',
+                                width: '100%',
+                                color: 'white',
+                                borderRadius: '.2rem',
+                                padding: '.3rem .2rem'
+                            }}>Chỉnh sửa</p>
+                            :
+                            <p style={{ margin: 0, color: 'red' }}>
+                                {product.productSalePrice} vnd
+                            </p>
+                        }
+                    </Link>
+                </div>
             </div>
         </div>
     )

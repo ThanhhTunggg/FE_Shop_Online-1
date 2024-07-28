@@ -21,6 +21,10 @@ const CardDetailsPage = () => {
     const [runCardDeleteHandler, setRunCardDeleteHandler] = useState(false)
     const [deleteCardNumber, setDeleteCardNumber] = useState("")
     const [dataCart, setDataCart] = useState([])
+    const [totalMoney, setTotalMoney] = useState(0)
+    const [totalProdct, setTotalProdct] = useState(0)
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [productArray, setProductArray] = useState([])
 
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
@@ -37,6 +41,22 @@ const CardDetailsPage = () => {
     // saved cards list reducer
     const deleteSavedCardReducer = useSelector(state => state.deleteSavedCardReducer)
     const { success } = deleteSavedCardReducer
+
+    const handleCheckboxChange = (product, isChecked) => {
+        if (isChecked) {
+            setSelectedProducts([...selectedProducts, product]);
+            var money = product.productSalePrice ? product.productSalePrice * product.amount : product.productPrice * product.amount
+            setTotalMoney(totalMoney + money)
+            setTotalProdct(totalProdct + 1)
+            setProductArray(prevProductArray => [...prevProductArray, product]);
+        } else {
+            setSelectedProducts(selectedProducts.filter(p => p.productId !== product.productId));
+            var money = product.productSalePrice ? product.productSalePrice * product.amount : product.productPrice * product.amount
+            setTotalMoney(totalMoney - money)
+            setTotalProdct(totalProdct - 1)
+            setProductArray(prevProductArray => prevProductArray.filter(p => p.productId !== product.productId));
+        }
+    };
 
     const getCart = async () => {
         try {
@@ -73,98 +93,271 @@ const CardDetailsPage = () => {
 
     // card deletion message
     if (success) {
-        alert("Card successfully deleted.")
         window.location.reload()
 
     }
 
     return (
-        <div>
-            {loading && <span style={{ display: "flex" }}>
-                <h5>Getting Card Information</h5>
-                <span className="ml-2">
-                    <Spinner animation="border" />
-                </span>
-            </span>}
+        <div style={{
+            padding: '0 0 5.5rem 0',
+            margin: '0 13%'
+        }}>
+            <div style={{ width: '100%' }}>
+                {loading && <span style={{ display: "flex" }}>
+                    <h5>Đang tải dữ liệu...</h5>
+                    <span className="ml-2">
+                        <Spinner animation="border" />
+                    </span>
+                </span>}
 
-            {/* Modal Start*/}
-            <h4>Giỏ hàng của bạn</h4>
-            <div>
-                <>
-                    <DeleteCardComponent
-                        userId={userId}
-                        deleteCardNumber={deleteCardNumber}
-                        runCardDeleteHandler={runCardDeleteHandler}
-                        toggleRunCardDeleteHandler={toggleRunCardDeleteHandler}
-                    />
-                </>
-            </div>
-
-            {dataCart ? dataCart.map((each, idx) => (
-                <>
-                    <div key={idx}>
-                        <Link to={`/product/${each.productId}`} >
-                            <Container>
-                                <Row className="mr-6 mb-2 border border-dark">
-                                    <Col className="p-3">
-                                        Tên: {each.productName ? <span>
-                                            {each.productName}
-                                        </span>
-                                            : "Not Set"}
-                                    </Col>
-                                    <Col className="p-3">
-                                        Loại: {each.productName ? <span>
-                                            {each.productName}
-                                        </span>
-                                            : "Not Set"}
-                                    </Col>
-                                    <Col className="p-3">
-                                        Số lượng: <span>
-                                            {each.amount}
-                                        </span>
-                                    </Col>
-                                    <Col className="p-3">
-                                        Giá: {each.productSalePrice ? <span>
-                                            {each.productSalePrice} VND
-                                        </span>
-                                            : each.productPrice} VND
-                                    </Col>
-                                    <Col className="p-3">
-                                        <Link to="#"
-                                            onClick={() => {
-                                                setDeleteCardNumber(each.userId)
-                                                setUserId(each.userId)
-                                                setRunCardDeleteHandler(!runCardDeleteHandler)
-                                            }}
-                                        >
-                                            <svg fill="#000000" height="30px" width="30px" version="1.1" viewBox="0 0 315 315" enable-background="new 0 0 315 315">
-                                                <g>
-                                                    <path d="m256.774,23.942h-64.836v-6.465c0-9.636-7.744-17.477-17.263-17.477h-34.348c-9.521,0-17.266,7.841-17.266,17.478v6.465h-64.835c-9.619,0-17.445,7.76-17.445,17.297v11.429c0,7.168 4.42,13.33 10.698,15.951 1.989,39.623 13.5,231.193 14.018,239.801 0.222,3.696 3.284,6.58 6.987,6.58h170.033c3.703,0 6.766-2.884 6.987-6.58 0.518-8.607 12.028-200.178 14.018-239.801 6.278-2.621 10.698-8.783 10.698-15.951v-11.43c5.68434e-14-9.537-7.826-17.297-17.446-17.297zm-119.713-6.464c0-1.918 1.465-3.478 3.266-3.478h34.348c1.8,0 3.264,1.56 3.264,3.478v6.465h-40.877v-6.465zm-82.282,23.761c0-1.818 1.546-3.297 3.445-3.297h198.549c1.899,0 3.445,1.478 3.445,3.297v11.429c0,1.819-1.546,3.299-3.445,3.299h-198.548c-1.899,0-3.445-1.479-3.445-3.299v-11.429zm181.143,259.761h-156.848c-2.055-34.247-11.479-191.674-13.51-231.033h183.867c-2.031,39.359-11.454,196.786-13.509,231.033z" />
-                                                    <path d="m157.5,95.125c-3.866,0-7,3.134-7,7v176.109c0,3.866 3.134,7 7,7 3.866,0 7-3.134 7-7v-176.109c0-3.866-3.134-7-7-7z" />
-                                                    <path d="m110.2,102.04c-0.202-3.86-3.507-6.837-7.355-6.625-3.86,0.201-6.827,3.494-6.625,7.355l9.182,175.829c0.195,3.736 3.285,6.635 6.984,6.635 0.123,0 0.247-0.003 0.371-0.01 3.86-0.201 6.827-3.494 6.625-7.355l-9.182-175.829z" />
-                                                    <path d="m212.155,95.415c-3.899-0.223-7.153,2.764-7.355,6.625l-9.184,175.829c-0.202,3.861 2.765,7.154 6.625,7.355 0.125,0.007 0.248,0.01 0.371,0.01 3.698,0 6.789-2.898 6.984-6.635l9.184-175.829c0.202-3.861-2.764-7.154-6.625-7.355z" />
-                                                </g>
-                                            </svg>
-                                        </Link>
-                                    </Col>
-
-                                </Row>
-                            </Container>
-                        </Link>
-                    </div>
-                </>
-            )) :
+                {/* Modal Start*/}
+                <h4>Giỏ hàng của bạn</h4>
                 <div>
-                    <Message variant='info'>Card details not available.</Message>
+                    <>
+                        <DeleteCardComponent
+                            userId={userId}
+                            deleteCardNumber={deleteCardNumber}
+                            runCardDeleteHandler={runCardDeleteHandler}
+                            toggleRunCardDeleteHandler={toggleRunCardDeleteHandler}
+                        />
+                    </>
                 </div>
-            }
-            <span style={{ display: 'flex', justifyContent: 'right', alignItems: 'center' }}>
-                <Link to={''}
-                    onClick={() => {
-                        setRunCardDeleteHandler(!runCardDeleteHandler)
+
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: 'white',
+                    marginBottom: '.4rem',
+                    padding: '.6rem 0',
+                    borderRadius: '.2rem'
+                }}>
+                    <div style={{
+                        width: '10%',
+                        textAlign: 'center'
+                    }}>Chọn</div>
+                    <div style={{
+                        width: '35%',
+                        textAlign: 'left'
+                    }}>Sản phẩm</div>
+                    <div style={{
+                        width: '20%',
+                        textAlign: 'left'
+                    }}>Loại</div>
+                    <div style={{
+                        width: '10%',
+                        textAlign: 'left'
+                    }}>Số lượng</div>
+                    <div style={{
+                        width: '20%',
+                        textAlign: 'left'
+                    }}>Giá</div>
+                    <div style={{
+                        width: '6%',
+                        textAlign: 'left'
+                    }}></div>
+                </div>
+
+                {dataCart ? dataCart.map((each, idx) => (
+                    <>
+                        <div key={idx} style={{
+                            backgroundColor: 'white',
+                            border: 'none',
+                            outline: 'none',
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginBottom: '.9rem',
+                            padding: '.2rem',
+                            borderRadius: '.2rem'
+                        }}>
+                            <div style={{
+                                width: '10%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <input type='checkbox'
+                                    onChange={(e) => handleCheckboxChange(each, e.target.checked)}
+                                />
+                            </div>
+                            <Link to={`/product/${each.productId}`} style={{
+                                width: '90%'
+                            }}>
+                                <div style={{
+                                    color: 'black',
+                                    width: '100%'
+                                }}>
+                                    <div className="mr-6 mb-2" style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        width: '100%',
+                                        justifyContent: 'space-between',
+                                    }}>
+                                        <div>
+                                            <img src='https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-ly334dw9e3ff7b'
+                                                width={'60rem'} height={'60rem'}
+                                            />
+                                        </div>
+                                        <div style={{
+                                            width: '25%',
+                                            flexWrap: 'wrap',
+                                            display: 'flex',
+                                            justifyContent: 'left',
+                                            alignItems: 'center',
+                                            backgroundColor: 'white',
+                                            overflow: 'hidden',
+                                        }}>
+                                            {each.productName ? <p style={{
+                                                margin: 0,
+                                                padding: 0,
+                                                width: '80%'
+                                            }}>
+                                                {each.productName}
+                                            </p>
+                                                : "Not Set"}
+                                        </div>
+                                        <div style={{
+                                            width: '20%',
+                                            flexWrap: 'wrap',
+                                            display: 'flex',
+                                            justifyContent: 'left',
+                                            alignItems: 'center',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            Loại: {each.productName ? <p style={{
+                                                margin: 0,
+                                                padding: 0
+                                            }}>
+                                                {each.productName}
+                                            </p>
+                                                : "Not Set"}
+                                        </div>
+                                        <div style={{
+                                            width: '10%',
+                                            flexWrap: 'wrap',
+                                            display: 'flex',
+                                            justifyContent: 'left',
+                                            alignItems: 'center',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            <button style={{
+                                                width: '30px',
+                                                border: '1px solid lightgrey',
+                                                borderRadius: '2px 0 0 2px',
+                                                fontSize: '14px',
+                                                justifyContent: 'center',
+                                                backgroundColor: 'white'
+                                            }}>/</button>
+                                            <input disabled value={each.amount}
+                                                style={{
+                                                    width: '30px',
+                                                    outline: 'none',
+                                                    border: '1px solid lightgrey',
+                                                    backgroundColor: 'white',
+                                                    textAlign: 'center',
+                                                    fontSize: '14px'
+                                                }}
+                                            />
+                                            <button style={{
+                                                width: '30px',
+                                                border: '1px solid lightgrey',
+                                                borderRadius: '0 2px 2px 0',
+                                                fontSize: '14px',
+                                                justifyContent: 'center',
+                                                backgroundColor: 'white'
+                                            }}>/</button>
+                                        </div>
+                                        <div style={{
+                                            width: '20%',
+                                            flexWrap: 'wrap',
+                                            display: 'flex',
+                                            justifyContent: 'left',
+                                            alignItems: 'center',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            {each.productSalePrice ? (<p style={{
+                                                margin: 0,
+                                                padding: 0,
+                                                color: 'red'
+                                            }}>
+                                                {each.productSalePrice * each.amount} vnd
+                                            </p>)
+                                                : (<p style={{
+                                                    margin: 0,
+                                                    padding: 0,
+                                                    color: 'red'
+                                                }}>{each.productPrice * each.amount} vnd</p>)}
+                                        </div>
+                                        <div className="p-3">
+                                            <Link to="#"
+                                                onClick={() => {
+                                                    setDeleteCardNumber(each)
+                                                    setUserId(each.userId)
+                                                    setRunCardDeleteHandler(!runCardDeleteHandler)
+                                                }}
+                                            >
+                                                <p style={{
+                                                    margin: 0,
+                                                    padding: 0
+                                                }}>Xoá</p>
+                                            </Link>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+                    </>
+                )) :
+                    <div>
+                        <Message variant='info'>Chưa có sản phẩm nào trong giỏ hàng</Message>
+                    </div>
+                }
+            </div>
+            <div style={{
+                position: 'fixed',
+                alignItems: 'center',
+                bottom: 0,
+                backgroundColor: 'white',
+                height: '5rem',
+                left: 0,
+                right: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                padding: '0 0 0 35rem',
+                boxShadow: 'rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px'
+            }}>
+                <div style={{
+                    width: '20%'
+                }}>
+                    Tổng số sản phẩm: {totalProdct}
+                </div>
+                <div style={{
+                    width: '30%'
+                }}>
+                    Tổng tiền: {totalMoney} vnd
+                </div>
+                <div style={{
+                    width: '30%'
+                }}>
+                    <Link to={{
+                        pathname: `checkout`,
+                        state: { productArray }
                     }}
-                >Thanh toán</Link>
-            </span>
+                        onClick={() => {
+                            setRunCardDeleteHandler(!runCardDeleteHandler)
+                        }}
+                        style={{
+                            backgroundColor: 'orange',
+                            color: 'white',
+                            padding: '.8rem 2rem',
+                            borderRadius: '.4rem'
+                        }}
+                    >Thanh toán</Link>
+                </div>
+            </div>
         </div>
     )
 }

@@ -8,6 +8,7 @@ import { CREATE_PRODUCT_RESET, DELETE_PRODUCT_RESET, UPDATE_PRODUCT_RESET, CARD_
 import axios from 'axios'
 import { notification, Space } from 'antd';
 import apiRoot from '../Config/ConfigApi'
+import Product from '../components/Product'
 
 function ProductDetailsPage({ history, match }) {
 
@@ -23,6 +24,27 @@ function ProductDetailsPage({ history, match }) {
     // product details reducer
     const productDetailsReducer = useSelector(state => state.productDetailsReducer)
     const { loading, error, product } = productDetailsReducer
+    var productArray = []
+    
+    useEffect(() => {
+        var product1 = {
+            productId: product.productId,
+            productName: product.productName,
+            productPrice: product.productPrice,
+            productSalePrice: product.productSalePrice,
+            productCost: product.productCost,
+            productStock: product.productStock,
+            productDescription: product.productDescription,
+            productDate: product.productDate,
+            userId: product.userId,
+            categoryId: product.categoryId,
+            amount: amount
+        }
+        productArray.push(product1)
+    }, [product, amount])
+
+    const productsListReducer = useSelector(state => state.productsListReducer)
+    const { loadingg, errorr, products } = productsListReducer
 
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
@@ -85,8 +107,8 @@ function ProductDetailsPage({ history, match }) {
             api['success']({
                 message: 'Thêm thành công',
                 description:
-                  'Sản phẩm đã được thêm thành công vào giỏ hàng',
-              });
+                    'Sản phẩm đã được thêm thành công vào giỏ hàng',
+            });
         } catch (error) {
             console.error("Error fetching cart data:", error);
         }
@@ -145,7 +167,8 @@ function ProductDetailsPage({ history, match }) {
                     margin: '0 -1rem 1rem -1rem',
                     backgroundColor: 'white',
                     borderRadius: '.5rem',
-                    padding: '1rem 0'
+                    padding: '1rem 0',
+                    margin: '0 13%'
                 }}>
                     <Container>
                         <Row>
@@ -185,7 +208,18 @@ function ProductDetailsPage({ history, match }) {
                                     height: '50%',
                                     marginBottom: '2rem'
                                 }}>
-                                    Price:<span className="text-success ml-2">{product.productSalePrice} VND</span>
+                                    <p className="ml-2"
+                                        style={{
+                                            fontSize: '24px',
+                                            color: 'red',
+                                            fontWeight: 'bold',
+                                            width: '100%',
+                                            backgroundColor: '#fafafa',
+                                            height: 'fit-content',
+                                            padding: '.3rem 1rem',
+                                            borderRadius: '.2rem',
+                                        }}
+                                    >{product.productSalePrice} vnd</p>
                                 </span>
 
                                 <span style={{
@@ -194,41 +228,62 @@ function ProductDetailsPage({ history, match }) {
                                     padding: "2px",
                                     alignItems: 'center'
                                 }}>
-                                    <p style={{
-                                        padding: 0,
-                                        margin: '0 1rem'
-                                    }}>Số lượng</p>
-                                    <button style={{
-                                        width: '30px',
-                                        border: '1px solid lightgrey',
-                                        borderRadius: '2px 0 0 2px',
-                                        fontSize: '20px',
-                                        justifyContent: 'center',
-                                        backgroundColor: 'white'
-                                    }} onClick={handleButtonSub}>-</button>
-                                    <input disabled value={amount} onChange={handleInputChange}
-                                        style={{
-                                            width: '50px',
-                                            outline: 'none',
-                                            border: '1px solid lightgrey',
-                                            backgroundColor: 'white',
-                                            textAlign: 'center',
-                                            fontSize: '20px'
-                                        }}
-                                    />
-                                    <button style={{
-                                        width: '30px',
-                                        border: '1px solid lightgrey',
-                                        borderRadius: '0 2px 2px 0',
-                                        fontSize: '20px',
-                                        justifyContent: 'center',
-                                        backgroundColor: 'white'
-                                    }} onClick={() => handleButtonAdd(product.productStock)}>+</button>
-
-                                    <p style={{
-                                        padding: 0,
-                                        margin: '0 1rem'
-                                    }}>{product.productStock}</p>
+                                    {userInfo && userInfo.userRole === 1 ?
+                                        <div style={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            backgroundColor: '#fafafa',
+                                            borderRadius: '.2rem',
+                                            padding: '1rem'
+                                        }}>
+                                            <p style={{
+                                                padding: 0,
+                                                margin: '0 1rem'
+                                            }}>Số lượng còn lại</p>
+                                            <p style={{
+                                                padding: 0,
+                                                margin: '0 1rem',
+                                                fontWeight: 'bold'
+                                            }}>{product.productStock}</p>
+                                        </div>
+                                        :
+                                        <>
+                                            <p style={{
+                                                padding: 0,
+                                                margin: '0 1rem'
+                                            }}>Số lượng</p>
+                                            <button style={{
+                                                width: '30px',
+                                                border: '1px solid lightgrey',
+                                                borderRadius: '2px 0 0 2px',
+                                                fontSize: '20px',
+                                                justifyContent: 'center',
+                                                backgroundColor: 'white'
+                                            }} onClick={handleButtonSub}>-</button>
+                                            <input disabled value={amount} onChange={handleInputChange}
+                                                style={{
+                                                    width: '50px',
+                                                    outline: 'none',
+                                                    border: '1px solid lightgrey',
+                                                    backgroundColor: 'white',
+                                                    textAlign: 'center',
+                                                    fontSize: '20px'
+                                                }}
+                                            />
+                                            <button style={{
+                                                width: '30px',
+                                                border: '1px solid lightgrey',
+                                                borderRadius: '0 2px 2px 0',
+                                                fontSize: '20px',
+                                                justifyContent: 'center',
+                                                backgroundColor: 'white'
+                                            }} onClick={() => handleButtonAdd(product.productStock)}>+</button>
+                                            <p style={{
+                                                padding: 0,
+                                                margin: '0 1rem'
+                                            }}>{product.productStock}</p>
+                                        </>
+                                    }
                                 </span>
 
                                 <span style={{
@@ -245,7 +300,10 @@ function ProductDetailsPage({ history, match }) {
                                                     display: 'flex',
                                                     justifyContent: 'space-between'
                                                 }}>
-                                                    <Link to={`${product.productId}/checkout/`}
+                                                    <Link to={{
+                                                        pathname: `${product.productId}/checkout`,
+                                                        state: { productArray }
+                                                    }}
                                                         style={{
                                                             width: '40%'
                                                         }}>
@@ -261,7 +319,7 @@ function ProductDetailsPage({ history, match }) {
                                                         </button>
                                                     </Link>
 
-                                                    <Link to={`${product.productId}/checkout/`}
+                                                    <Link
                                                         style={{
                                                             width: '50%'
                                                         }}>
@@ -298,7 +356,10 @@ function ProductDetailsPage({ history, match }) {
                                                     display: 'flex',
                                                     justifyContent: 'space-between'
                                                 }}>
-                                                    <Link to={`${product.productId}/checkout/`}
+                                                    <Link to={{
+                                                        pathname: `${product.productId}/checkout`,
+                                                        state: { productArray }
+                                                    }}
                                                         style={{
                                                             width: '40%'
                                                         }}>
@@ -350,19 +411,52 @@ function ProductDetailsPage({ history, match }) {
             }
 
             <div style={{
-                margin: '0 -1rem 2rem -1rem',
                 backgroundColor: 'white',
                 borderRadius: '.5rem',
-                padding: '1rem'
+                padding: '1rem',
+                margin: '1rem 13%'
             }}>
                 <h5>Mô tả về sản phẩm</h5>
                 <p>{product.productDescription}</p>
             </div>
 
-            <div>
-                <h5>Các sản phẩm khác dành cho bạn</h5>
-            </div>
-        </div>
+            {
+                userInfo && userInfo.userRole === 1 ?
+                    <></>
+                    :
+                    <>
+                        <div style={{
+                            margin: '0 13%'
+                        }}>
+                            <h5 style={{
+                                backgroundColor: 'white',
+                                marginBottom: '.5rem',
+                                padding: '.4rem .5rem',
+                                border: '1px solid orange',
+                                borderBottom: '3px solid orange',
+                                borderRadius: '.4rem'
+                            }}>Các sản phẩm dành cho bạn</h5>
+                        </div>
+                        <div>
+                            <div style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                borderRadius: '.5rem',
+                                margin: '0 13%'
+                            }}>
+                                {products.slice(0, 10).map((product, idx) => (
+                                    <div style={{
+                                        width: '15.1%',
+                                        margin: '0 .7%',
+                                    }}>
+                                        <Product product={product} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+            }
+        </div >
 
     )
 }

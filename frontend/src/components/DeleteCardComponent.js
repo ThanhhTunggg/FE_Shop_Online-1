@@ -18,31 +18,27 @@ function DeleteCardComponent({ userId, deleteCardNumber, runCardDeleteHandler, t
     return (
         <div>
             {/* Modal Start*/}
-            <div>
-                <Modal show={runCardDeleteHandler} onHide={toggleRunCardDeleteHandler}>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Modal show={runCardDeleteHandler} onHide={toggleRunCardDeleteHandler} className='mt-5'>
                     <Modal.Header closeButton>
                         <Modal.Title>
-                            <i style={{ color: "#e6e600" }} className="fas fa-exclamation-triangle"></i>
-                            {" "}
-                            Delete Confirmation
+                            Xác nhận xoá
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p>
-                            <b>
-                                Warning!
-                            </b>
-                            {" "}deleting your card will delete your stripe account and all its data.
-                        </p>
-                        Are you sure you want to delete the card "{deleteCardNumber}"?
+                            Bạn có chắc chắn muốn xoá sản phẩm <b>{deleteCardNumber.productName}</b> khỏi giỏ hàng không?
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="danger" onClick={() => confirmDelete(deleteCardNumber)}>
-                            Confirm Delete
+                        <Button variant="danger" onClick={() => confirmDelete(deleteCardNumber.cartId)}>
+                            Xác nhận xoá
                         </Button>
                         <Button variant="primary" onClick={toggleRunCardDeleteHandler}>
-                            Cancel
+                            Huỷ
                         </Button>
                     </Modal.Footer>
                 </Modal>

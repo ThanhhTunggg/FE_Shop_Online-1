@@ -30,7 +30,7 @@ function SearchBarForProducts() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <button
-                        style={{ backgroundColor: '#4444FF', width: '15%', borderRadius: '1rem' }}
+                        style={{ backgroundColor: '#0866ff', width: '15%', borderRadius: '1rem' }}
                         type="submit"
                         className="btn btn-primary ml-2 button-focus-css"
                     ><i className="fas fa-search"></i>

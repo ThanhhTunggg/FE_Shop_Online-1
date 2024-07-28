@@ -10,7 +10,8 @@ import { Spinner } from 'react-bootstrap'
 import { savedCardsList } from '../actions/cardActions'
 import UserAddressComponent from '../components/UserAddressComponent'
 import { checkTokenValidation, logout } from '../actions/userActions'
-import {CHARGE_CARD_RESET} from '../constants/index'
+import { CHARGE_CARD_RESET } from '../constants/index'
+import { useLocation } from 'react-router-dom/cjs/react-router-dom.min'
 
 const CheckoutPage = ({ match }) => {
 
@@ -27,7 +28,7 @@ const CheckoutPage = ({ match }) => {
         }
         setSelectedAddressId(id)
     }
-      
+
     // check token validation reducer
     const checkTokenValidationReducer = useSelector(state => state.checkTokenValidationReducer)
     const { error: tokenError } = checkTokenValidationReducer
@@ -48,12 +49,24 @@ const CheckoutPage = ({ match }) => {
     const savedCardsListReducer = useSelector(state => state.savedCardsListReducer)
     const { stripeCards } = savedCardsListReducer
 
+    const location = useLocation();
+    const [productLst, setProductLst] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
+
+    useEffect(() => {
+        if (location.state && location.state.productArray) {
+            setProductLst(location.state.productArray);
+            const total = location.state.productArray.reduce((sum, product) => sum + (product.productSalePrice
+                ? product.productSalePrice * product.amount
+                : product.productPrice * product.amount), 0);
+            setTotalPrice(total);
+        }
+    }, [location.state]);
+
     useEffect(() => {
         if (!userInfo) {
             history.push("/login")
         } else {
-            dispatch(checkTokenValidation())
-            dispatch(getProductDetails(match.params.id))
             dispatch(savedCardsList())
             dispatch({
                 type: CHARGE_CARD_RESET
@@ -66,7 +79,7 @@ const CheckoutPage = ({ match }) => {
         dispatch(logout())
         history.push("/login")
         window.location.reload()
-      }
+    }
 
     return (
         <div>
@@ -90,50 +103,94 @@ const CheckoutPage = ({ match }) => {
                 <Container>
                     <Row>
                         <Col xs={6}>
-                            <h3>Checkout Summary</h3>
-                            <Card className="mb-4">
-                                <Card.Body>
-                                    <Container>
-                                        <Row>
-                                            <Col>
-                                                <Image src={product.image} alt="image" height="180" />
-                                            </Col>
-                                            <Col>
-                                                <h5 className="card-title text-capitalize">
-                                                    {product.name}
-                                                </h5>
-                                                <span className="card-text text-success">₹ {product.price}</span>
-                                            </Col>
-                                        </Row>
-                                    </Container>
-                                </Card.Body>
-                            </Card>
+                            <h3>Thanh toán</h3>
+                            <div style={{
+                                border: '1px solid lightgrey',
+                                borderRadius: '.3rem',
+                                backgroundColor: 'white'
+                            }}>
+                                {productLst && productLst.length > 0
+                                    ? productLst.map(product => (
+                                        <Card className="mb-4">
+                                            <Card.Body>
+                                                <Container>
+                                                    <Row>
+                                                        <Col>
+                                                            <h5 className="card-title text-capitalize">
+                                                                {product.productName}
+                                                            </h5>
+                                                            <span className="card-text text-success"> {product.price}</span>
+                                                        </Col>
+                                                        <Col>
+                                                            <span className="card-text">Số lượng:  {product.amount}</span>
+                                                        </Col>
+                                                        <Col>
+                                                            <h5 className="card-title" style={{
+                                                                color: 'red'
+                                                            }}>{product.productSalePrice
+                                                                ? product.productSalePrice * product.amount
+                                                                : product.productPrice * product.amount} vnd
+                                                            </h5>
+                                                            <span className="card-text text-success"> {product.price}</span>
+                                                        </Col>
+                                                    </Row>
+                                                </Container>
+                                            </Card.Body>
+                                        </Card>
+                                    ))
+                                    :
+                                    <></>
+                                }
+                                <div style={{
+                                    backgroundColor: 'white',
+                                    borderRadius: '.2rem',
+                                    padding: '1rem .5rem',
+                                    border: '1px solid lightgrey',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <h4>Tổng tiền</h4>
+                                    <h5 style={{
+                                        color: '#0866ff'
+                                    }}>{totalPrice} vnd</h5>
 
-                            <span style={{ display: "flex" }}>
-                                <h3>Billing Address</h3>
+                                </div>
+                            </div>
+
+                            <div style={{ display: "flex", marginTop: '1rem' }}>
+                                <h3>Địa chỉ nhận hàng</h3>
                                 <Link
                                     className="ml-2 mt-2"
                                     to="/all-addresses/"
                                 >
-                                    Edit/Add Address
+                                    Chỉnh sửa/Thêm địa chỉ
                                 </Link>
-                            </span>
+                            </div>
                             <UserAddressComponent handleAddressId={handleAddressId} />
                         </Col>
                         <Col xs={6}>
                             <h3>
-                                Payments Section
+                                Phương thức thanh toán
                             </h3>
-                            {success ?
-                                <ChargeCardComponent
-                                    selectedAddressId={selectedAddressId}
-                                    addressSelected={addressSelected}
-                                    product={product}
-                                />
-                                :
-                                <CreateCardComponent
-                                    addressSelected={addressSelected}
-                                    stripeCards={stripeCards} />}
+                            <p style={{
+                                backgroundColor: 'white',
+                                padding: '1rem .5rem',
+                                borderRadius: '.2rem',
+                                border: '1px solid lightgrey',
+                                fontWeight: 'bold'
+                            }}>Thanh toán khi nhận hàng</p>
+
+                            <p style={{
+                                backgroundColor: '#ff7d29',
+                                padding: '1rem .5rem',
+                                borderRadius: '.2rem',
+                                border: '1px solid lightgrey',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                color: 'black',
+                                cursor: 'pointer'
+                            }}>Đặt hàng</p>
                         </Col>
                     </Row>
                 </Container>
