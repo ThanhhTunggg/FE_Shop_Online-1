@@ -10,7 +10,7 @@ function SearchBarForProducts() {
     const onSubmit = (e) => {
         e.preventDefault();
         if (searchTerm) {
-            history.push(`/?searchTerm=${searchTerm}`)
+            history.push(`/search/${searchTerm}`)
         }
     };
 
@@ -18,21 +18,32 @@ function SearchBarForProducts() {
         <div>
             <form onSubmit={onSubmit}>
                 <span
-                    style={{ display: "flex" }}
+                    style={{ display: "flex",
+                    borderRadius: '3px',
+                    backgroundColor: 'white',
+                    justifyContent: 'space-between',
+                    padding: '3px 5px',
+                    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 10px'
+                     }}
                     className=""
                 >
                     <input
-                        style={{ borderRadius: '1rem' }}
+                        style={{
+                            borderRadius: '5px',
+                            outline: '0px solid orange',
+                            width: '90%',
+                            border: 'none',
+                            padding: '0 10px'
+                        }}
                         type="text"
                         value={searchTerm}
                         placeholder="Tìm kiếm sản phẩm"
-                        className="form-control"
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <button
-                        style={{ backgroundColor: '#0866ff', width: '15%', borderRadius: '1rem' }}
+                        style={{ backgroundColor: '#fb6445', width: '8%', borderRadius: '3px', color: 'white' }}
                         type="submit"
-                        className="btn btn-primary ml-2 button-focus-css"
+                        className="btn ml-2 button-focus-css"
                     ><i className="fas fa-search"></i>
                     </button>
                 </span>

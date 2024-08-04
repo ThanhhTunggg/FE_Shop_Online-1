@@ -35,6 +35,17 @@ const ProductCreatePage = () => {
     // check token validation reducer
     const checkTokenValidationReducer = useSelector(state => state.checkTokenValidationReducer)
     const { error: tokenError } = checkTokenValidationReducer
+    const [file1, setFile1] = useState(null);
+    const [file2, setFile2] = useState(null);
+    const [file3, setFile3] = useState(null);
+    const [file4, setFile4] = useState(null);
+    const [file5, setFile5] = useState(null);
+
+    const [url1, setUrl1] = useState(null);
+    const [url2, setUrl2] = useState(null);
+    const [url3, setUrl3] = useState(null);
+    const [url4, setUrl4] = useState(null);
+    const [url5, setUrl5] = useState(null);
 
     useEffect(() => {
         if (!userInfo) {
@@ -59,9 +70,19 @@ const ProductCreatePage = () => {
         }
     }
 
-    const onSubmit = (e) => {
-        e.preventDefault()
+    const onSubmit = async (e) => {
+        e.preventDefault();
 
+        const data1 = await postFile(file1);
+        const data2 = await postFile(file2);
+        const data3 = await postFile(file3);
+        const data4 = await postFile(file4);
+        const data5 = await postFile(file5);
+        console.log(data1)
+        console.log(data2)
+        console.log(data3)
+        console.log(data4)
+        console.log(data5)
         let form_data = {
             "productName": name,
             "productPrice": price,
@@ -74,9 +95,118 @@ const ProductCreatePage = () => {
             "deleteAt": "2024-06-23T08:39:10.722Z",
             "createAt": "2024-06-23T08:39:10.722Z",
             "userId": userInfo.userId,
-            "categoryId": category
+            "categoryId": category,
+            "img1": data1,
+            "img2": data2,
+            "img3": data3,
+            "img4": data4,
+            "img5": data5,
         }
+
         dispatch(createProduct(form_data))
+    }
+
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setUrl1(URL.createObjectURL(selectedFile))
+            const reader = new FileReader();
+            reader.readAsDataURL(selectedFile);
+            reader.addEventListener("load", () => {
+                const data = reader.result.split(",")[1];
+                const postData = {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    data: data
+                }
+                setFile1(postData);
+            })
+        }
+    };
+
+    const handleFileChange2 = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setUrl2(URL.createObjectURL(selectedFile))
+            const reader = new FileReader();
+            reader.readAsDataURL(selectedFile);
+            reader.addEventListener("load", () => {
+                const data = reader.result.split(",")[1];
+                const postData = {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    data: data
+                }
+                setFile2(postData);
+            })
+        }
+    };
+
+    const handleFileChange3 = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setUrl3(URL.createObjectURL(selectedFile))
+            const reader = new FileReader();
+            reader.readAsDataURL(selectedFile);
+            reader.addEventListener("load", () => {
+                const data = reader.result.split(",")[1];
+                const postData = {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    data: data
+                }
+                setFile3(postData);
+            })
+        }
+    };
+
+    const handleFileChange4 = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setUrl4(URL.createObjectURL(selectedFile))
+            const reader = new FileReader();
+            reader.readAsDataURL(selectedFile);
+            reader.addEventListener("load", () => {
+                const data = reader.result.split(",")[1];
+                const postData = {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    data: data
+                }
+                setFile4(postData);
+            })
+        }
+    };
+
+    const handleFileChange5 = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setUrl5(URL.createObjectURL(selectedFile))
+            const reader = new FileReader();
+            reader.readAsDataURL(selectedFile);
+            reader.addEventListener("load", () => {
+                const data = reader.result.split(",")[1];
+                const postData = {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    data: data
+                }
+                setFile5(postData);
+            })
+        }
+    };
+
+    async function postFile(postData) {
+        try {
+            const response = await fetch("https://script.google.com/macros/s/AKfycbzXqSkxwM-WpNHetg2hkbIyTwiKXVVu0D4QUdrW4QSQjWF0SDTwT1sKrpMCNmAyGIDE/exec", {
+                method: 'POST',
+                body: JSON.stringify(postData),
+            })
+            const data = await response.json();
+            return data.link
+        } catch {
+            return ""
+        }
     }
 
     if (productCreationSuccess) {
@@ -95,19 +225,6 @@ const ProductCreatePage = () => {
     }
 
     const [images, setImages] = useState([]);
-
-    const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length + images.length > 5) {
-            alert('You can only select up to 5 images.');
-            return;
-        }
-        const newImages = files.map(file => ({
-            file,
-            preview: URL.createObjectURL(file),
-        }));
-        setImages(prevImages => [...prevImages, ...newImages]);
-    };
 
     const handleRemoveImage = (index) => {
         setImages(prevImages => prevImages.filter((_, i) => i !== index));
@@ -142,6 +259,7 @@ const ProductCreatePage = () => {
                         type="text"
                         value={name}
                         placeholder="Nhập tên sản phẩm"
+                        className='inputAddNewProduct'
                         onChange={(e) => setName(e.target.value)}
                     >
                     </Form.Control>
@@ -158,6 +276,7 @@ const ProductCreatePage = () => {
                         as="textarea"
                         rows={3}
                         value={description}
+                        className='inputAddNewProduct'
                         placeholder="Nhập mô tả sản phẩm"
                         onChange={(e) => setDescription(e.target.value)}
                     >
@@ -172,10 +291,11 @@ const ProductCreatePage = () => {
                     </Form.Label>
                     <Form.Control
                         required
-                        type="text"
+                        type="number"
                         pattern="[0-9]+(\.[0-9]{1,2})?%?"
                         value={price}
                         placeholder="Nhập giá VND"
+                        className='inputAddNewProduct'
                         step="0.01"
                         onChange={(e) => setPrice(e.target.value)}
                     >
@@ -190,10 +310,11 @@ const ProductCreatePage = () => {
                     </Form.Label>
                     <Form.Control
                         required
-                        type="text"
+                        type="number"
                         pattern="[0-9]+(\.[0-9]{1,2})?%?"
                         value={priceDiscount}
                         placeholder="Nhập giá đã giảm VND"
+                        className='inputAddNewProduct'
                         step="0.01"
                         onChange={(e) => setPriceDiscount(e.target.value)}
                     >
@@ -208,10 +329,11 @@ const ProductCreatePage = () => {
                     </Form.Label>
                     <Form.Control
                         required
-                        type="text"
+                        type="number"
                         pattern="[0-9]+(\.[0-9]{1,2})?%?"
                         value={stock}
-                        placeholder="Nhập giá đã giảm VND"
+                        placeholder="Nhập số luợng hàng"
+                        className='inputAddNewProduct'
                         step="1"
                         onChange={(e) => setStock(e.target.value)}
                     >
@@ -224,6 +346,8 @@ const ProductCreatePage = () => {
                     </Form.Label>
                     <Form.Control
                         as="select"
+                        required
+                        className='inputAddNewProduct'
                         value={category}
                         onChange={(e) => setcategory(e.target.value)}
                     >
@@ -236,33 +360,15 @@ const ProductCreatePage = () => {
                             ))
                         ) : (
                             <option value="" disabled>
-                                <option value="">Select a category</option>
+                                <option value="">Chọn loại mặt hàng</option>
                             </option>
                         )}
                     </Form.Control>
                 </Form.Group>
 
-                {/* {category === '1' &&
-                    (<Form.Group controlId='date'>
-                        <Form.Label>
-                            <b>
-                                Hạn sử dụng
-                            </b>
-                        </Form.Label>
-                        <Form.Control
-                            required
-                            type="Date"
-                            value={price}
-                            placeholder="Nhập hạn sử dụng"
-                            onChange={(e) => setPriceDiscount(e.target.value)}
-                        >
-                        </Form.Control>
-                    </Form.Group>)
-                } */}
-
                 <Form.Group controlId="imageUpload">
                     <Form.Label>
-                        <b>Upload Images</b>
+                        <b>Tải ảnh</b>
                     </Form.Label>
                 </Form.Group>
                 <div style={{
@@ -293,18 +399,103 @@ const ProductCreatePage = () => {
                     ))}
                 </div>
 
-                <Form.Group controlId="imageUpload">
-                    <Form.Control
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        disabled={images.length >= 5}
-                    />
-                    <Form.Text className="text-muted">
-                        You can upload up to 5 images.
-                    </Form.Text>
-                </Form.Group>
+                <div style={{
+                    display: 'flex',
+                    width: '50%',
+                    justifyContent: 'space-evenly'
+                }}>
+                    <Form.Group controlId="imageUpload">
+                        <div className="file-upload-container">
+                            <Form.Control
+                                type="file"
+                                required
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                disabled={images.length >= 1}
+                            />
+                            {url1 ? (
+                                <img src={url1} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                            ) : (
+                                <div className="file-upload-text">
+                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                </div>
+                            )}
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="imageUpload">
+                        <div className="file-upload-container">
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange2}
+                                disabled={images.length >= 1}
+                            />
+                            {url2 ? (
+                                <img src={url2} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                            ) : (
+                                <div className="file-upload-text">
+                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                </div>
+                            )}
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="imageUpload">
+                        <div className="file-upload-container">
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange3}
+                                disabled={images.length >= 1}
+                            />
+                            {url3 ? (
+                                <img src={url3} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                            ) : (
+                                <div className="file-upload-text">
+                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                </div>
+                            )}
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="imageUpload">
+                        <div className="file-upload-container">
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange4}
+                                disabled={images.length >= 1}
+                            />
+                            {url4 ? (
+                                <img src={url4} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                            ) : (
+                                <div className="file-upload-text">
+                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                </div>
+                            )}
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="imageUpload">
+                        <div className="file-upload-container">
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange5}
+                                disabled={images.length >= 1}
+                            />
+                            {url5 ? (
+                                <img src={url5} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                            ) : (
+                                <div className="file-upload-text">
+                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                </div>
+                            )}
+                        </div>
+                    </Form.Group>
+                </div>
+
 
                 <button type="submit" class="btn btn-success mr-4"
                     style={{

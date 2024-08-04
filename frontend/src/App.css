@@ -3,7 +3,7 @@
 }
 
 body {
-  background-color: #fff0f0;
+  background-color: #f5f5f5;
 }
 
 a {
@@ -12,6 +12,11 @@ a {
 
 a:hover {
   text-decoration: none;
+}
+
+p {
+  margin: 0;
+  padding: 0;
 }
 
 .App-logo {
@@ -129,4 +134,113 @@ svg {
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   padding: .2rem;
   outline: 1px solid orange;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  /* Độ rộng của thanh cuộn */
+  height: 8px;
+  /* Chiều cao của thanh cuộn ngang */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  /* Màu của thanh cuộn */
+  border-radius: 10px;
+  /* Bo góc cho thanh cuộn */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* Màu của thanh cuộn khi hover */
+}
+
+::-webkit-scrollbar-track {
+  background: white;
+  /* Màu nền của thanh cuộn */
+  border-radius: 10px;
+  /* Bo góc cho nền thanh cuộn */
+}
+
+.accountView p {
+  padding: 10px 20px;
+  background-color: lightgrey;
+  margin: .3rem .3rem;
+  border-radius: .5rem;
+  cursor: pointer;
+}
+
+.accountView p:hover {
+  padding: 10px 20px;
+  background-color: rgb(248, 153, 122);
+  color: white;
+}
+
+.file-upload-container {
+  width: 100px;
+  /* Chiều rộng của hình vuông */
+  height: 100px;
+  /* Chiều cao của hình vuông */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ccc;
+  /* Đường viền kiểu dấu gạch */
+  border-radius: 10px;
+  /* Đường viền tròn */
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background-color: #f8f8f8;
+}
+
+.file-upload-container input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-upload-container:hover {
+  border-color: #aaa;
+}
+
+.file-upload-text {
+  color: #666;
+  text-align: center;
+  font-size: 14px;
+  pointer-events: none;
+  /* Không thể nhấp vào văn bản */
+}
+
+.inputAddNewProduct {
+  border: 1px solid grey
+}
+
+.inputAddNewProduct:focus {
+  background-color: #ffcdb6;
+}
+
+.cateAdmin:hover{
+  background-color: #ffcdb6;
+  cursor: pointer;
+}
+
+.slideshow-container {
+  width: auto; /* Chiều rộng của slideshow */
+  height: fit-content; /* Chiều cao của slideshow */
+  overflow: hidden;
+  position: relative;
+}
+
+.slideshow-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Đảm bảo hình ảnh phù hợp với kích thước container */
+  border-radius: 10px; /* Tùy chọn: Thêm viền tròn nếu muốn */
+  transition: opacity 1s ease-in-out; /* Hiệu ứng chuyển đổi mượt mà */
 }

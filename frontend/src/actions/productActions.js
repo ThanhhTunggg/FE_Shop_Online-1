@@ -95,6 +95,8 @@ export const createProduct = (product) => async (dispatch, getState) => {
             }
         }
 
+        console.log(product);
+        
         // api call
         const { data } = await axios.post(
             `${apiRoot}Product/AddProduct`,

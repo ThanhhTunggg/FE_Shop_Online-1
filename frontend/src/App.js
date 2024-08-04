@@ -18,6 +18,8 @@ import OrdersListPage from './pages/OrdersListPage'
 import ProductCreatePage from './pages/ProductCreatePage'
 import ProductUpdatePage from './pages/ProductUpdatePage'
 import NotFound from './pages/NotFoundPage'
+import ProductsSearchPage from './pages/ProductSearchpage'
+import CategoryPage from './pages/categorypage'
 
 
 const App = () => {
@@ -49,6 +51,8 @@ const App = () => {
             <Route path="/all-addresses/" component={AllAddressesOfUserPage} exact />
             <Route path="/all-addresses/:id/" component={AddressUpdatePage} exact />
             <Route path="/all-orders/" component={OrdersListPage} exact />
+            <Route path="/search/:key/" component={ProductsSearchPage} exact />
+            <Route path="/category/" component={CategoryPage} exact />
             <Route path="" component={NotFound} exact />
           </Switch>
         </div>

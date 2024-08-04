@@ -26,7 +26,10 @@ function NavBar() {
 
     const CustomTitle = ({ userName }) => {
         return (
-            <span style={{ color: '#1d4670' }}>
+            <span style={{ color: 'white', fontWeight: '500' }}>
+                <svg width={'50px'} viewBox="-70 -50 200 200">
+                    <path fill='white' d="M 45 0 C 20.147 0 0 20.147 0 45 c 0 24.853 20.147 45 45 45 s 45 -20.147 45 -45 C 90 20.147 69.853 0 45 0 z M 45 22.007 c 8.899 0 16.14 7.241 16.14 16.14 c 0 8.9 -7.241 16.14 -16.14 16.14 c -8.9 0 -16.14 -7.24 -16.14 -16.14 C 28.86 29.248 36.1 22.007 45 22.007 z M 45 83.843 c -11.135 0 -21.123 -4.885 -27.957 -12.623 c 3.177 -5.75 8.144 -10.476 14.05 -13.341 c 2.009 -0.974 4.354 -0.958 6.435 0.041 c 2.343 1.126 4.857 1.696 7.473 1.696 c 2.615 0 5.13 -0.571 7.473 -1.696 c 2.083 -1 4.428 -1.015 6.435 -0.041 c 5.906 2.864 10.872 7.591 14.049 13.341 C 66.123 78.957 56.135 83.843 45 83.843 z" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                </svg>
                 {userName}
             </span>
         );
@@ -37,62 +40,97 @@ function NavBar() {
             position: 'fixed',
             zIndex: 20,
             width: '100%',
+            height: 'fit-content',
             marginTop: 0,
             paddingTop: 0,
-            top: 0
+            top: 0,
+            backgroundColor: '#fb6445'
         }}>
-            <Navbar bg="Light" variant="dark" expand="lg" collapseOnSelect style={{ backgroundColor: '#FF7D29' }}>
+            <Navbar bg="Light" variant="dark" expand="lg" collapseOnSelect style={{ backgroundColor: '#1a71ff' }}>
                 <Container>
-                    <LinkContainer to="/" style={{ width: '10%' }}>
-                        <Navbar.Brand> <img src={`${process.env.PUBLIC_URL}/logoShopp.png`} alt="Logo" height={'40px'} /></Navbar.Brand>
+                    <LinkContainer to="/" style={{ width: '15%' }}>
+                        <Navbar.Brand> <img src={`${process.env.PUBLIC_URL}/logo.png`} alt="Logo" height={'40px'} /></Navbar.Brand>
                     </LinkContainer>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="mr-auto" style={{ width: '100%' }}>
-                            <span className="" style={{ width: '95%' }}>
-                                <SearchBarForProducts />
+                        <Nav className="mr-auto" style={{ width: '75%' }}>
+                            <span className="" style={{ width: '100%' }}>
+                            {userInfo && userInfo.userRole !== 1 && <SearchBarForProducts />}
+                            {!userInfo &&<SearchBarForProducts />}
                             </span>
                         </Nav>
 
                         {/* login-logout condition here */}
 
                         {userInfo ?
-                            <div style={{ width: '25%', display: 'flex', justifyContent: 'space-around' }}>
+                            <div style={{ width: '30%', display: 'flex', justifyContent: 'space-around' }}>
                                 {userInfo && userInfo.userRole === 1 ?
                                     <></>
                                     :
                                     <LinkContainer to="/stripe-card-details/">
-                                        <svg width={'1.7rem'} viewBox="0 0 576 512">
-                                            <path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z" /></svg>
+                                        <svg width={'50px'} stroke={'1'} viewBox="0 0 500 500" style={{
+                                            color: 'white'
+                                        }}>
+                                            <path fill="white" d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
+                                        </svg>
                                     </LinkContainer>
                                 }
                                 <NavDropdown className="navbar-nav text-capitalize" id='username'
                                     title={<CustomTitle userName={userInfo.userName} />}>
                                     <LinkContainer to="/account">
-                                        <NavDropdown.Item>Account Settings</NavDropdown.Item>
+                                        <NavDropdown.Item>Cài đặt tài khoản</NavDropdown.Item>
                                     </LinkContainer>
-                                    {userInfo && userInfo.userRole === 1 ?
-                                        <></>
-                                        :
-                                        <>
-                                            <LinkContainer to="/all-addresses/">
-                                                <NavDropdown.Item>Address Settings</NavDropdown.Item>
-                                            </LinkContainer>
-                                        </>
-                                    }
                                     <LinkContainer to="/all-orders/">
-                                        <NavDropdown.Item>All Orders</NavDropdown.Item>
+                                        <NavDropdown.Item>Đơn hàng</NavDropdown.Item>
                                     </LinkContainer>
                                     <NavDropdown.Item onClick={logoutHandler}>
-                                        Logout
+                                        Đăng xuất
                                     </NavDropdown.Item>
                                 </NavDropdown>
                             </div>
                             :
 
-                            <LinkContainer to="/login">
-                                <Nav.Link>Login</Nav.Link>
-                            </LinkContainer>
+                            <div style={{
+                                width: '20%',
+                                display: 'flex',
+                                justifyContent: 'space-evenly'
+                            }}>
+                                <LinkContainer to="/login" style={{
+                                    cursor: 'pointer',
+                                    color: 'white',
+                                    fontSize: '16px',
+                                    margin: 0,
+                                    padding: 0,
+                                }}>
+                                    <p style={{
+                                        cursor: 'pointer',
+                                        margin: 0,
+                                        padding: 0
+                                    }}>Đăng nhập</p>
+                                </LinkContainer>
+                                <LinkContainer to='/login' style={{
+                                    cursor: 'pointer',
+                                    color: 'white',
+                                    fontSize: '16px',
+                                    margin: 0,
+                                    padding: '0 3px',
+                                }}>
+                                    <p>|</p>
+                                </LinkContainer>
+                                <LinkContainer to="/register" style={{
+                                    cursor: 'pointer',
+                                    color: 'white',
+                                    fontSize: '16px',
+                                    margin: 0,
+                                    padding: 0,
+                                }}>
+                                    <p style={{
+                                        cursor: 'pointer',
+                                        margin: 0,
+                                        padding: 0
+                                    }}>Đăng ký</p>
+                                </LinkContainer>
+                            </div>
                         }
                     </Navbar.Collapse>
                 </Container>

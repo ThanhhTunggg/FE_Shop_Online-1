@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getProductsList } from '../actions/productActions'
 import Message from '../components/Message'
@@ -8,6 +8,9 @@ import { useHistory } from "react-router-dom";
 import { CREATE_PRODUCT_RESET } from '../constants'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'
+import { calc } from 'antd/es/theme/internal'
+import axios from 'axios'
+import apiRoot from '../Config/ConfigApi'
 
 
 function ProductsListPage() {
@@ -19,9 +22,29 @@ function ProductsListPage() {
     // products list reducer
     const productsListReducer = useSelector(state => state.productsListReducer)
     const { loading, error, products } = productsListReducer
+    const [categoryList, setcategoryList] = useState([])
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
     const { userInfo } = userLoginReducer
+
+    const images = [
+        `${process.env.PUBLIC_URL}/anhsl1.jpg`,
+        `${process.env.PUBLIC_URL}/anhsl2.jpg`,
+        `${process.env.PUBLIC_URL}/anhsl3.jpg`,
+        `${process.env.PUBLIC_URL}/anhsl6.jpg`,
+        `${process.env.PUBLIC_URL}/anhsl7.jpg`,
+        `${process.env.PUBLIC_URL}/anhsl8.jpg`,
+    ];
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
+        }, 3000); // 3000ms = 3s
+
+        return () => clearInterval(interval); // Xóa interval khi component bị hủy
+    }, [images.length]);
 
 
     useEffect(() => {
@@ -29,8 +52,22 @@ function ProductsListPage() {
         dispatch({
             type: CREATE_PRODUCT_RESET
         })
+        LoadCategory()
         //dispatch(checkTokenValidation())
     }, [dispatch])
+
+    const LoadCategory = async () => {
+        try {
+            const { data } = await axios.get(
+                `${apiRoot}Category`
+            )
+            console.log(data)
+            setcategoryList(data)
+        } catch {
+            setcategoryList([])
+        }
+    }
+
 
     const showNothingMessage = () => {
         return (
@@ -82,36 +119,27 @@ function ProductsListPage() {
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            marginTop: '-1rem',
-                            height: '20vh',
-                            overflow: 'hidden'
+                            marginTop: '1rem',
+                            // height: '30vh',
+                            overflow: 'hidden',
+                            padding: '1rem',
+                            boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px'
                         }}>
-                            <img src={`${process.env.PUBLIC_URL}/banner.jpg`} alt="Logo" style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover'
-                            }} />
+                            <div className="slideshow-container">
+                                <img src={images[currentIndex]} width={'100%'} alt={`Slideshow ${currentIndex}`} className="slideshow-image" />
+                            </div>
                         </div>
                     }
                     {userInfo && userInfo.userRole === 1 ?
                         <div style={{
                             margin: '0 13.5%',
+                            marginTop: '6rem'
                         }}>
                             <>
-                                <Link to="/new-product/">
-                                    <p style={{
-                                        backgroundColor: '#30d46f',
-                                        color: 'white',
-                                        padding: '2rem 2rem',
-                                        width: '100%',
-                                        borderRadius: '.5rem',
-                                        textAlign: 'center',
-                                        fontWeight: 'bold',
-                                        fontSize: '26px'
-                                    }}>Quản lý doanh thu</p>
-                                </Link>
                                 <div style={{
-                                    display: 'flex'
+                                    display: 'flex',
+                                    marginBottom: '1rem',
+                                    justifyContent: 'space-between'
                                 }}>
                                     <Link to="/new-product/">
                                         <p style={{
@@ -120,18 +148,32 @@ function ProductsListPage() {
                                             padding: '2rem 2rem',
                                             width: 'fit-content',
                                             borderRadius: '.5rem',
+                                            fontSize: '22px',
                                             marginRight: '1rem'
                                         }}>Thêm sản phẩm mới</p>
                                     </Link>
-                                    <Link to="/new-product/">
+                                    <Link to="/category/">
                                         <p style={{
                                             backgroundColor: '#e28743',
                                             color: 'white',
                                             padding: '2rem 2rem',
                                             width: 'fit-content',
                                             borderRadius: '.5rem',
-                                            marginRight: '1rem'
+                                            marginRight: '1rem',
+                                            fontSize: '22px',
                                         }}>Quản lý danh mục sản phẩm</p>
+                                    </Link>
+                                    <Link to="/new-product/">
+                                        <p style={{
+                                            backgroundColor: '#30d46f',
+                                            color: 'white',
+                                            padding: '2rem 2rem',
+                                            borderRadius: '.5rem',
+                                            textAlign: 'center',
+                                            fontWeight: 'bold',
+                                            fontSize: '22px',
+                                            marginBottom: '1rem'
+                                        }}>Quản lý doanh thu</p>
                                     </Link>
                                 </div>
                                 <h5 style={{
@@ -146,22 +188,71 @@ function ProductsListPage() {
                         </div>
 
                         :
-                        <h5 style={{
-                            margin: '0 13.5%',
-                            backgroundColor: 'white',
-                            marginBottom: '.5rem',
-                            padding: '.4rem .5rem',
-                            border: '1px solid orange',
-                            borderBottom: '3px solid orange',
-                            borderRadius: '.4rem'
-                        }}>Gợi ý hôm nay</h5>
+                        <div style={{
+                            margin: '0 15%',
+                        }}>
+                            <div style={{
+                                backgroundColor: 'white',
+                                borderRadius: '2px',
+                                marginBottom: '1rem',
+                                boxShadow: 'rgba(0, 0, 0, 0.04) 0px 3px 5px'
+                            }}>
+                                <div style={{
+                                    padding: '.4rem .5rem',
+                                    height: '50px',
+                                    alignContent: 'center'
+                                }}>
+                                    <p style={{
+                                        padding: 0,
+                                        margin: 0
+                                    }}>DANH MỤC</p>
+                                </div>
+                                <div className="scroll-container" style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    height: '220px',
+                                    overflow: "auto"
+                                }}>
+                                    {categoryList.map(x => (
+                                        <div style={{
+                                            height: '50%',
+                                            borderTop: '.5px solid lightgrey',
+                                            borderRight: '.5px solid lightgrey',
+                                            borderLeft: '.5px solid lightgrey',
+                                            borderBottom: '.5px solid lightgrey',
+                                            width: '10%',
+                                            textAlign: 'center',
+                                            fontSize: '14px',
+                                            cursor: 'pointer',
+                                            padding: '.1rem .5rem',
+                                            backgroundColor: 'white',
+                                            overflow: 'hidden'
+                                        }}>
+                                            <img width={'60%'} src={x.imageUrl !== null ? x.imageUrl : `${process.env.PUBLIC_URL}/bong.png`} />
+                                            <p>{x.categoryName}</p>
+                                        </div>
+                                    ))}
+
+                                </div>
+                            </div>
+                            <h5 style={{
+                                backgroundColor: 'white',
+                                marginBottom: '1rem',
+                                padding: '.8rem .5rem',
+                                borderBottom: '5px solid orange',
+                                borderRadius: '2px',
+                                textAlign: 'center',
+                                color: '#fb6445',
+                                boxShadow: 'rgba(0, 0, 0, 0.1) 0px 2px 8px'
+                            }}>GỢI Ý HÔM NAY</h5>
+                        </div>
                     }
 
                     <div style={{
                         width: '75%',
                         display: 'flex',
                         flexWrap: 'wrap',
-                        margin: '0 13%'
+                        margin: '0 15%'
                     }}>
                         {(products.filter((item) =>
                             item.productName.toLowerCase().includes(searchTerm !== "" ? searchTerm.split("=")[1] : "")
@@ -169,8 +260,8 @@ function ProductsListPage() {
                             item.productName.toLowerCase().includes(searchTerm !== "" ? searchTerm.split("=")[1] : "")
                         )).map((product, idx) => (
                             <div style={{
-                                width: '15.1%',
-                                margin: '0 .7%',
+                                width: 'calc(100%/7)',
+                                margin: '0 .5rem',
                             }}>
                                 <Product product={product} />
                             </div>

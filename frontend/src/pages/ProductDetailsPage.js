@@ -173,8 +173,8 @@ function ProductDetailsPage({ history, match }) {
                     <Container>
                         <Row>
                             <Col md={6}>
-                                <Card.Img variant="top" src={product.image
-                                    ? product.image
+                                <Card.Img variant="top" src={product.img1
+                                    ? product.img1
                                     : 'https://img.freepik.com/free-psd/3d-realistic-background-podium-product-display_125755-833.jpg?t=st=1719133017~exp=1719136617~hmac=bb11c1b837eb9a791dddd696abe46b63c6e6200ec09cd4ceb3abc09d5d0ce510&w=826'} height="450" />
 
                                 {/* Product edit and delete conditions */}

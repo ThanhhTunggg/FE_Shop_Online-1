@@ -26,7 +26,7 @@ function Product({ product }) {
 
                 }}>
                     <Link to={`/product/${product.productId}`} >
-                        <Card.Img variant="top" src={imageProduct} height="170" />
+                        <Card.Img variant="top" src={product.img1 ? product.img1 : imageProduct} height="170" />
                     </Link>
                     <Link to={`/product/${product.productId}`}>
                         <p style={{ borderTop: '1px solid grey', width: '100' }}>

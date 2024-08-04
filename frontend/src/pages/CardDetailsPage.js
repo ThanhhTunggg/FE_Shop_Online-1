@@ -10,6 +10,7 @@ import DeleteCardComponent from '../components/DeleteCardComponent'
 import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 import api from '../Config/ConfigApi'
+import apiRoot from '../Config/ConfigApi'
 
 
 const CardDetailsPage = () => {
@@ -60,7 +61,7 @@ const CardDetailsPage = () => {
 
     const getCart = async () => {
         try {
-            const response = await axios.get(`${api}Cart/${userInfo.userId}`);
+            const response = await axios.get(`${apiRoot}Cart/${userInfo.userId}`);
             setDataCart(response.data);
         } catch (error) {
             console.error("Error fetching cart data:", error);
@@ -111,7 +112,9 @@ const CardDetailsPage = () => {
                 </span>}
 
                 {/* Modal Start*/}
-                <h4>Giỏ hàng của bạn</h4>
+                <h4 style={{
+                    marginTop: '6rem'
+                }}>Giỏ hàng của bạn</h4>
                 <div>
                     <>
                         <DeleteCardComponent
@@ -240,19 +243,11 @@ const CardDetailsPage = () => {
                                             display: 'flex',
                                             justifyContent: 'left',
                                             alignItems: 'center',
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
                                         }}>
-                                            <button style={{
-                                                width: '30px',
-                                                border: '1px solid lightgrey',
-                                                borderRadius: '2px 0 0 2px',
-                                                fontSize: '14px',
-                                                justifyContent: 'center',
-                                                backgroundColor: 'white'
-                                            }}>/</button>
                                             <input disabled value={each.amount}
                                                 style={{
-                                                    width: '30px',
+                                                    width: '90px',
                                                     outline: 'none',
                                                     border: '1px solid lightgrey',
                                                     backgroundColor: 'white',
@@ -260,14 +255,6 @@ const CardDetailsPage = () => {
                                                     fontSize: '14px'
                                                 }}
                                             />
-                                            <button style={{
-                                                width: '30px',
-                                                border: '1px solid lightgrey',
-                                                borderRadius: '0 2px 2px 0',
-                                                fontSize: '14px',
-                                                justifyContent: 'center',
-                                                backgroundColor: 'white'
-                                            }}>/</button>
                                         </div>
                                         <div style={{
                                             width: '20%',
@@ -325,9 +312,9 @@ const CardDetailsPage = () => {
                 left: 0,
                 right: 0,
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'space-evenly',
                 padding: '0 0 0 35rem',
-                boxShadow: 'rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px'
+                boxShadow: 'rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px'
             }}>
                 <div style={{
                     width: '20%'
