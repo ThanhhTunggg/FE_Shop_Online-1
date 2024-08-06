@@ -15,33 +15,37 @@ function ProductDetailsPage({ history, match }) {
     const dispatch = useDispatch()
 
     const [amount, setAmount] = useState(1)
+    const [imgLink, setImgLink] = useState('')
+    const [pricePro, setIPricePro] = useState('')
+    const [stockPro, setStockPro] = useState('')
+    const [productCheck, setProductCheck] = useState('')
 
     // modal state and functions
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+
     // product details reducer
     const productDetailsReducer = useSelector(state => state.productDetailsReducer)
     const { loading, error, product } = productDetailsReducer
     var productArray = []
-    
+    const [product1, setProduct1] = useState({});
+    const [productDetail, setProductDetail] = useState([]);
+
     useEffect(() => {
-        var product1 = {
-            productId: product.productId,
-            productName: product.productName,
-            productPrice: product.productPrice,
-            productSalePrice: product.productSalePrice,
-            productCost: product.productCost,
-            productStock: product.productStock,
-            productDescription: product.productDescription,
-            productDate: product.productDate,
-            userId: product.userId,
-            categoryId: product.categoryId,
-            amount: amount
+        if (product.product !== undefined) {
+            setProduct1(product.product)
+            setProductDetail(product.productDetails)
+            setIPricePro(product.productDetails[0].productDetailPrice)
+            setStockPro(product.productDetails[0].detailStock)
+            setImgLink(product1.img1)
+            setProductCheck(product.productDetails[0].productDetailId)
         }
-        productArray.push(product1)
+        // productArray.push(product1)
     }, [product, amount])
+
+
 
     const productsListReducer = useSelector(state => state.productsListReducer)
     const { loadingg, errorr, products } = productsListReducer
@@ -95,7 +99,7 @@ function ProductDetailsPage({ history, match }) {
             const cardData = {
                 id: userInfo.userId,
                 productId: id,
-                detailProductId: 1,
+                detailProductId: productCheck,
                 amount: amount
             }
             // api call
@@ -128,6 +132,18 @@ function ProductDetailsPage({ history, match }) {
         setAmount(event.target.value);
     };
 
+    const handleShowImage = (linkUrl) => {
+        setImgLink(linkUrl)
+    }
+
+    const handlePriceSet = (price, idDetail) => {
+        setIPricePro(price)
+        productDetail.forEach(e => {
+            if(e.productDetailId === idDetail){
+                setProductCheck(idDetail)
+            }
+        });
+    }
     return (
         <div>
             {contextHolder}
@@ -141,7 +157,7 @@ function ProductDetailsPage({ history, match }) {
                             Delete Confirmation
                         </Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Are you sure you want to delete this product <em>"{product.productName}"</em>?</Modal.Body>
+                    <Modal.Body>Are you sure you want to delete this product <em>{product1.productName}</em>?</Modal.Body>
                     <Modal.Footer>
                         <Button variant="danger" onClick={() => confirmDelete()}>
                             Confirm Delete
@@ -173,17 +189,30 @@ function ProductDetailsPage({ history, match }) {
                     <Container>
                         <Row>
                             <Col md={6}>
-                                <Card.Img variant="top" src={product.img1
-                                    ? product.img1
-                                    : 'https://img.freepik.com/free-psd/3d-realistic-background-podium-product-display_125755-833.jpg?t=st=1719133017~exp=1719136617~hmac=bb11c1b837eb9a791dddd696abe46b63c6e6200ec09cd4ceb3abc09d5d0ce510&w=826'} height="450" />
+                                <Card.Img variant="top" src={product1.img1
+                                    ? imgLink
+                                    : 'https://img.freepik.com/free-psd/3d-realistic-background-podium-product-display_125755-833.jpg?t=st=1719133017~exp=1719136617~hmac=bb11c1b837eb9a791dddd696abe46b63c6e6200ec09cd4ceb3abc09d5d0ce510&w=826'} height="450" style={{
+                                        border: '1px solid grey',
+                                        marginBottom: '.5rem',
+                                        borderRadius: '.5rem',
+                                        padding: '.5rem'
+                                    }} />
 
                                 {/* Product edit and delete conditions */}
-
+                                <div style={{
+                                    display: 'flex'
+                                }}>
+                                    {product1.img1 && <img src={product1.img1} width={'70px'} className='imgProductList' onClick={() => handleShowImage(product1.img1)} />}
+                                    {product1.img2 && <img src={product1.img2} width={'70px'} className='imgProductList' onClick={() => handleShowImage(product1.img2)} />}
+                                    {product1.img3 && <img src={product1.img3} width={'70px'} className='imgProductList' onClick={() => handleShowImage(product1.img3)} />}
+                                    {product1.img4 && <img src={product.img4} width={'70px'} className='imgProductList' onClick={() => handleShowImage(product1.img4)} />}
+                                    {product1.img5 && <img src={product1.img5} width={'70px'} className='imgProductList' onClick={() => handleShowImage(product1.img5)} />}
+                                </div>
                                 {userInfo && userInfo.userRole === 1 ?
                                     <span style={{ display: "flex" }}>
                                         <button
                                             className="mt-2 btn btn-primary button-focus-css"
-                                            onClick={() => history.push(`/product-update/${product.productId}/`)}
+                                            onClick={() => history.push(`/product-update/${product1.productId}/`)}
                                             style={{ width: "100%" }}
                                         >Chỉnh sửa sản phẩm
                                         </button>
@@ -199,7 +228,7 @@ function ProductDetailsPage({ history, match }) {
                             </Col>
 
                             <Col sm>
-                                <b>{product.productName}</b>
+                                <b>{product1.productName}</b>
                                 <hr />
                                 <span style={{
                                     display: "flex",
@@ -219,9 +248,25 @@ function ProductDetailsPage({ history, match }) {
                                             padding: '.3rem 1rem',
                                             borderRadius: '.2rem',
                                         }}
-                                    >{product.productSalePrice} vnd</p>
+                                    >{pricePro} vnd</p>
                                 </span>
 
+                                <div style={{ display: 'flex' }}>
+                                    {productDetail.length > 0 && productDetail.map(x => (
+                                        productCheck === x.productDetailId ? (<div style={{backgroundColor: '#1a71ff',color: 'white',  borderRadius: '.5rem', cursor: 'pointer', border: '1px solid grey', marginRight: '.5rem', textAlign: 'center', padding: '.2rem 1rem' }}
+                                            onClick={() => handlePriceSet(x.productDetailPrice, x.productDetailId)}>
+                                            <p style={{
+                                                width: 'fit-content'
+                                            }}>{x.productDetailName}</p>
+                                        </div>)
+                                        : (<div style={{ borderRadius: '.5rem', cursor: 'pointer', border: '1px solid grey', marginRight: '.5rem', textAlign: 'center', padding: '.2rem 1rem' }}
+                                            onClick={() => handlePriceSet(x.productDetailPrice, x.productDetailId)}>
+                                            <p style={{
+                                                width: 'fit-content'
+                                            }}>{x.productDetailName}</p>
+                                        </div>)
+                                    ))}
+                                </div>
                                 <span style={{
                                     display: "flex",
                                     justifyContent: "left",
@@ -244,7 +289,7 @@ function ProductDetailsPage({ history, match }) {
                                                 padding: 0,
                                                 margin: '0 1rem',
                                                 fontWeight: 'bold'
-                                            }}>{product.productStock}</p>
+                                            }}>{stockPro}</p>
                                         </div>
                                         :
                                         <>
@@ -281,7 +326,7 @@ function ProductDetailsPage({ history, match }) {
                                             <p style={{
                                                 padding: 0,
                                                 margin: '0 1rem'
-                                            }}>{product.productStock}</p>
+                                            }}>{stockPro}</p>
                                         </>
                                     }
                                 </span>
@@ -294,14 +339,14 @@ function ProductDetailsPage({ history, match }) {
                                 }}>
                                     {!userInfo ?
                                         (
-                                            product.productStock > 0 ?
+                                            stockPro > 0 ?
                                                 <div style={{
                                                     width: '100%',
                                                     display: 'flex',
                                                     justifyContent: 'space-between'
                                                 }}>
                                                     <Link to={{
-                                                        pathname: `${product.productId}/checkout`,
+                                                        pathname: `${product1.productId}/checkout`,
                                                         state: { productArray }
                                                     }}
                                                         style={{
@@ -350,14 +395,14 @@ function ProductDetailsPage({ history, match }) {
                                         :
                                         (
                                             userInfo.userRole !== 1 &&
-                                            (product.productStock > 0 ?
+                                            (stockPro > 0 ?
                                                 <div style={{
                                                     width: '100%',
                                                     display: 'flex',
                                                     justifyContent: 'space-between'
                                                 }}>
                                                     <Link to={{
-                                                        pathname: `${product.productId}/checkout`,
+                                                        pathname: `${product1.productId}/checkout`,
                                                         state: { productArray }
                                                     }}
                                                         style={{
@@ -384,7 +429,7 @@ function ProductDetailsPage({ history, match }) {
                                                             color: '#ee4d2d'
                                                         }}
                                                         onClick={() => {
-                                                            AddCart(product.productId)
+                                                            AddCart(product1.productId)
                                                         }}
                                                     >
                                                         Thêm vào giỏ hàng
@@ -417,7 +462,7 @@ function ProductDetailsPage({ history, match }) {
                 margin: '1rem 13%'
             }}>
                 <h5>Mô tả về sản phẩm</h5>
-                <p>{product.productDescription}</p>
+                <p>{product1.productDescription}</p>
             </div>
 
             {

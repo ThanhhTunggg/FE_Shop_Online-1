@@ -12,6 +12,8 @@ import UserAddressComponent from '../components/UserAddressComponent'
 import { checkTokenValidation, logout } from '../actions/userActions'
 import { CHARGE_CARD_RESET } from '../constants/index'
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min'
+import axios from 'axios'
+import apiRoot from '../Config/ConfigApi'
 
 const CheckoutPage = ({ match }) => {
 
@@ -20,6 +22,9 @@ const CheckoutPage = ({ match }) => {
     const dispatch = useDispatch()
     const [addressSelected, setAddressSelected] = useState(false)
     const [selectedAddressId, setSelectedAddressId] = useState(0)
+    const [selectedAddress, setSelectedAddress] = useState('')
+    const [address, setAddress] = useState('')
+    const [items, setItems] = useState([])
 
     // set address id handler
     const handleAddressId = (id) => {
@@ -67,6 +72,7 @@ const CheckoutPage = ({ match }) => {
         if (!userInfo) {
             history.push("/login")
         } else {
+            GetAddress()
             dispatch(savedCardsList())
             dispatch({
                 type: CHARGE_CARD_RESET
@@ -79,6 +85,48 @@ const CheckoutPage = ({ match }) => {
         dispatch(logout())
         history.push("/login")
         window.location.reload()
+    }
+
+    const GetAddress = async () => {
+        const { data } = await axios.get(apiRoot + `Address/getByUsId/${userInfo.userId}`)
+
+        setSelectedAddressId(data[0].addressID)
+        const { dataDetail } = await axios.get(apiRoot + `Address/getDetailAddress/${data[0].matp}/${data[0].maqh}/${data[0].mapx}`)
+        setSelectedAddress(dataDetail + ' ' + data[0].detail)
+    }
+
+    const HandleAddOrder = async () => {
+        const newItems = productLst.map(x => ({
+            'cartId': x.cartId,
+            'productDetailName': x.productDetailName,
+            'TotalMoney': x.productPrice * x.amount,
+            'productName': x.productName,
+            'userId': x.userId,
+            'amount': x.amount,
+            'productId': x.productId,
+            'addressId': selectedAddressId
+        }));
+        
+        setItems(newItems);
+        
+
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }        
+
+        const formData = {
+            request: { items: newItems }
+        }
+        
+
+        // api call
+        const { data } = await axios.post(
+            `${apiRoot}AddOrder`,
+            formData,
+            config
+        );
     }
 
     return (
@@ -164,7 +212,7 @@ const CheckoutPage = ({ match }) => {
                                     className="ml-2 mt-2"
                                     to="/all-addresses/"
                                 >
-                                    Chỉnh sửa/Thêm địa chỉ
+                                    {selectedAddress}
                                 </Link>
                             </div>
                             <UserAddressComponent handleAddressId={handleAddressId} />
@@ -190,7 +238,7 @@ const CheckoutPage = ({ match }) => {
                                 textAlign: 'center',
                                 color: 'black',
                                 cursor: 'pointer'
-                            }}>Đặt hàng</p>
+                            }} onClick={() => HandleAddOrder()}>Đặt hàng</p>
                         </Col>
                     </Row>
                 </Container>

@@ -94,8 +94,6 @@ export const createProduct = (product) => async (dispatch, getState) => {
                 Authorization: `Bearer ${userInfo.token}`
             }
         }
-
-        console.log(product);
         
         // api call
         const { data } = await axios.post(

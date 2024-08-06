@@ -40,6 +40,11 @@ function CategoryPage() {
     const [images, setImages] = useState([]);
     const [image, setImage] = useState(null)
 
+    const [inputValue, setInputValue] = useState('');
+
+    const handleChange = (event) => {
+        setInputValue(event.target.value);
+    };
 
     useEffect(() => {
         dispatch(getProductsList())
@@ -92,6 +97,30 @@ function CategoryPage() {
         )
     }
 
+    const HandleAddCategory = async () => {
+        const data5 = await postFile(file5);
+        let form_data = {
+            "categoryName": inputValue,
+            "imageUrl": data5
+        }
+
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }
+
+        const { data } = await axios.post(
+            `${apiRoot}Category/AddCategory`,
+            form_data,
+            config
+        )
+        LoadCategory()
+        setUrl5('')
+        setInputValue('')
+    }
+
+
     const handleFileChange5 = (event) => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
@@ -110,6 +139,28 @@ function CategoryPage() {
         }
     };
 
+    async function postFile(postData) {
+        try {
+            const response = await fetch("https://script.google.com/macros/s/AKfycbzXqSkxwM-WpNHetg2hkbIyTwiKXVVu0D4QUdrW4QSQjWF0SDTwT1sKrpMCNmAyGIDE/exec", {
+                method: 'POST',
+                body: JSON.stringify(postData),
+            })
+            const data = await response.json();
+            return data.link
+        } catch {
+            return ""
+        }
+    }
+
+    const HandleUpdateCategory = (text, linkUrl) => {
+        setInputValue(text)
+        setUrl5(linkUrl)
+    }
+    
+    const HandleAddNew = () => {
+        setInputValue('')
+        setUrl5('')
+    }
     return (
         <div>
             {error && <Message variant='danger'>{error}</Message>}
@@ -145,7 +196,7 @@ function CategoryPage() {
                                 marginBottom: '.3rem',
                                 display: 'flex',
                                 justifyContent: 'space-between'
-                            }}>
+                            }} onClick={() => HandleUpdateCategory(cate.categoryName, cate.imageUrl)}>
                                 <p>{cate.categoryName}</p>
                                 <button style={{
                                     border: 'none',
@@ -158,11 +209,15 @@ function CategoryPage() {
                     </div>
                     <div style={{
                         width: '50%',
-                        padding: '.5rem 1rem'
+                        padding: '.5rem 1rem',
+                        backgroundColor: '#cee0ff',
+                        borderRadius: '.5rem',
+                        margin: '.5rem'
                     }}>
                         <div style={{
                             display: 'flex',
                             justifyContent: 'space-evenly',
+                            marginBottom: '.8rem'
                         }}>
                             <button style={{
                                 border: 'none',
@@ -170,18 +225,14 @@ function CategoryPage() {
                                 borderRadius: '.5rem',
                                 backgroundColor: '#fb6445',
                                 color: 'white'
-                            }}>Thêm mới</button>
-                            <button style={{
-                                border: 'none',
-                                padding: '.5rem 2rem',
-                                borderRadius: '.5rem',
-                                backgroundColor: '#fb6445',
-                                color: 'white'
-                            }}>Chỉnh sửa</button>
+                            }} onClick={() => HandleAddNew()}>Thêm mới</button>
                         </div>
                         <div style={{
                             alignItems: 'center',
-                            alignContent: 'center'
+                            alignContent: 'center',
+                            backgroundColor: 'white',
+                            padding: '1rem',
+                            borderRadius: '.5rem'
                         }}>
                             <div style={{
                                 width: '100%',
@@ -219,29 +270,22 @@ function CategoryPage() {
                                 <input type='text' placeholder='Nhập tên danh mục' style={{
                                     width: '50%',
                                     borderRadius: '.5rem',
-                                    border:'1px solid grey',
+                                    border: '1px solid grey',
                                     padding: '.3rem 1rem'
-                                }}/>
+                                }} value={inputValue} onChange={handleChange}/>
                             </div>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'space-evenly',
-                                width: '50%',
+                                width: '100%',
                             }}>
                                 <button style={{
                                     border: 'none',
-                                    padding: '.5rem 2rem',
+                                    padding: '.5rem 5rem',
                                     borderRadius: '.5rem',
                                     backgroundColor: '#fb6445',
                                     color: 'white'
-                                }}>Clear</button>
-                                <button style={{
-                                    border: 'none',
-                                    padding: '.5rem 2rem',
-                                    borderRadius: '.5rem',
-                                    backgroundColor: '#fb6445',
-                                    color: 'white'
-                                }}>Lưu</button>
+                                }} onClick={() => HandleAddCategory()}>Lưu</button>
                             </div>
                         </div>
                     </div>

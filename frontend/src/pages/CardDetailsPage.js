@@ -199,8 +199,7 @@ const CardDetailsPage = () => {
                                         justifyContent: 'space-between',
                                     }}>
                                         <div>
-                                            <img src='https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-ly334dw9e3ff7b'
-                                                width={'60rem'} height={'60rem'}
+                                            <img src={each.imgUrl} width={'60rem'} height={'60rem'}
                                             />
                                         </div>
                                         <div style={{
@@ -229,11 +228,11 @@ const CardDetailsPage = () => {
                                             alignItems: 'center',
                                             backgroundColor: 'white'
                                         }}>
-                                            Loại: {each.productName ? <p style={{
+                                            Loại: {each.productDetailName ? <p style={{
                                                 margin: 0,
                                                 padding: 0
                                             }}>
-                                                {each.productName}
+                                                {each.productDetailName}
                                             </p>
                                                 : "Not Set"}
                                         </div>
@@ -264,18 +263,11 @@ const CardDetailsPage = () => {
                                             alignItems: 'center',
                                             backgroundColor: 'white'
                                         }}>
-                                            {each.productSalePrice ? (<p style={{
+                                            <p style={{
                                                 margin: 0,
                                                 padding: 0,
                                                 color: 'red'
-                                            }}>
-                                                {each.productSalePrice * each.amount} vnd
-                                            </p>)
-                                                : (<p style={{
-                                                    margin: 0,
-                                                    padding: 0,
-                                                    color: 'red'
-                                                }}>{each.productPrice * each.amount} vnd</p>)}
+                                            }}>{each.productPrice * each.amount} vnd</p>
                                         </div>
                                         <div className="p-3">
                                             <Link to="#"

@@ -244,3 +244,14 @@ svg {
   border-radius: 10px; /* Tùy chọn: Thêm viền tròn nếu muốn */
   transition: opacity 1s ease-in-out; /* Hiệu ứng chuyển đổi mượt mà */
 }
+
+.imgProductList{
+  border: 1px solid grey;
+  margin-right: .5rem;
+  padding: .2rem;
+  border-radius: .5rem;
+}
+
+.imgProductList:hover{
+  background-color: #bdd6ff;
+}

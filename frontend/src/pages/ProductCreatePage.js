@@ -8,6 +8,7 @@ import { CREATE_PRODUCT_RESET } from '../constants'
 import Message from '../components/Message';
 import axios from 'axios'
 import api from '../Config/ConfigApi'
+import apiRoot from '../Config/ConfigApi'
 
 
 const ProductCreatePage = () => {
@@ -47,6 +48,13 @@ const ProductCreatePage = () => {
     const [url4, setUrl4] = useState(null);
     const [url5, setUrl5] = useState(null);
 
+    const [detailName, setDetailName] = useState('');
+    const [detailPrice, setDetailPrice] = useState('');
+    const [detailPriceDiscount, setDetailPriceDiscount] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [items, setItems] = useState([]);
+
     useEffect(() => {
         if (!userInfo) {
             history.push("/login")
@@ -58,10 +66,42 @@ const ProductCreatePage = () => {
         LoadCategory()
     }, [])
 
+    const handleDelete = (index) => {
+        const newItems = items.filter((_, i) => i !== index);
+        setItems(newItems);
+    };
+
+    const handleAddDetail = () => {
+        if (parseInt(detailPriceDiscount, 10) > 100 && parseInt(detailPriceDiscount, 10) < 0) {
+            alert("Giảm giá là phần trăm < 100% và > 0%");
+        }
+        if (parseInt(detailPriceDiscount, 10) !== null) {
+            if (startDate === '' || endDate === '') {
+                alert("Vui lòng chọn thời gian bắt đầu và kết thúc giảm giá")
+            }
+        }
+        if (parseInt(detailPriceDiscount, 10) !== null && startDate !== '' && endDate !== '') {
+            const newItem = {
+                'productDetailName': detailName,
+                'productDetailPrice': detailPrice,
+                'detailPriceDiscount': detailPriceDiscount,
+                'detailStock': stock,
+                'startDate': startDate,
+                'endDate': endDate
+            };
+            setItems([...items, newItem]);
+            setDetailName('');
+            setDetailPrice('');
+            setDetailPriceDiscount('');
+            setStartDate('');
+            setEndDate('');
+        }
+    };
+
     const LoadCategory = async () => {
         try {
             const { data } = await axios.get(
-                `${api}Category`
+                `${apiRoot}Category`
             )
             console.log(data)
             setcategoryList(data)
@@ -78,17 +118,8 @@ const ProductCreatePage = () => {
         const data3 = await postFile(file3);
         const data4 = await postFile(file4);
         const data5 = await postFile(file5);
-        console.log(data1)
-        console.log(data2)
-        console.log(data3)
-        console.log(data4)
-        console.log(data5)
         let form_data = {
-            "productName": name,
-            "productPrice": price,
-            "productSalePrice": priceDiscount,
-            "productCost": price,
-            "productStock": stock,
+            product: {"productName": name,
             "productDescription": description,
             "productDate": "2024-06-23T08:39:10.722Z",
             "updateAt": "2024-06-23T08:39:10.722Z",
@@ -100,7 +131,8 @@ const ProductCreatePage = () => {
             "img2": data2,
             "img3": data3,
             "img4": data4,
-            "img5": data5,
+            "img5": data5},
+            productDetails: items
         }
 
         dispatch(createProduct(form_data))
@@ -282,64 +314,127 @@ const ProductCreatePage = () => {
                     >
                     </Form.Control>
                 </Form.Group>
+                <div>
+                    {items.map((item, index) => (
+                        <li key={index}>
+                            {item.productDetailName} - {item.productDetailPrice} - {item.detailPriceDiscount} - {item.startDate} - {item.endDate}
+                            <button onClick={() => handleDelete(index)}>Delete</button>
+                        </li>
+                    ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '70%' }}>
+                    <Form.Group controlId='nameDetail'>
+                        <Form.Label>
+                            <b>
+                                Loại sản phẩm
+                            </b>
+                        </Form.Label>
+                        <Form.Control
+                            required
+                            autoFocus={true}
+                            type="text"
+                            value={detailName}
+                            placeholder="Nhập Loại sản phẩm"
+                            className='inputAddNewProduct'
+                            onChange={(e) => setDetailName(e.target.value)}
+                        >
+                        </Form.Control>
+                    </Form.Group>
 
-                <Form.Group controlId='price'>
-                    <Form.Label>
-                        <b>
-                            Giá
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        required
-                        type="number"
-                        pattern="[0-9]+(\.[0-9]{1,2})?%?"
-                        value={price}
-                        placeholder="Nhập giá VND"
-                        className='inputAddNewProduct'
-                        step="0.01"
-                        onChange={(e) => setPrice(e.target.value)}
-                    >
-                    </Form.Control>
-                </Form.Group>
+                    <Form.Group controlId='price'>
+                        <Form.Label>
+                            <b>
+                                Giá
+                            </b>
+                        </Form.Label>
+                        <Form.Control
+                            required
+                            type="number"
+                            value={detailPrice}
+                            placeholder="Nhập giá VND"
+                            className='detailPrice'
+                            onChange={(e) => setDetailPrice(e.target.value)}
+                        >
+                        </Form.Control>
+                    </Form.Group>
 
-                <Form.Group controlId='priceDiscount'>
-                    <Form.Label>
-                        <b>
-                            Giảm giá
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        required
-                        type="number"
-                        pattern="[0-9]+(\.[0-9]{1,2})?%?"
-                        value={priceDiscount}
-                        placeholder="Nhập giá đã giảm VND"
-                        className='inputAddNewProduct'
-                        step="0.01"
-                        onChange={(e) => setPriceDiscount(e.target.value)}
-                    >
-                    </Form.Control>
-                </Form.Group>
+                    <div>
+                        <Form.Group controlId='priceDiscount'>
+                            <Form.Label>
+                                <b>
+                                    Giảm giá
+                                </b>
+                            </Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={detailPriceDiscount}
+                                placeholder="Nhập số phần trăm"
+                                className='inputAddNewProduct'
+                                onChange={(e) => setDetailPriceDiscount(e.target.value)}
+                            >
+                            </Form.Control>
+                        </Form.Group>
 
-                <Form.Group controlId='priceDiscount'>
-                    <Form.Label>
-                        <b>
-                            Số lượng hàng
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        required
-                        type="number"
-                        pattern="[0-9]+(\.[0-9]{1,2})?%?"
-                        value={stock}
-                        placeholder="Nhập số luợng hàng"
-                        className='inputAddNewProduct'
-                        step="1"
-                        onChange={(e) => setStock(e.target.value)}
-                    >
-                    </Form.Control>
-                </Form.Group>
+                        <Form.Group controlId='startDate'>
+                            <Form.Label>
+                                <b>
+                                    Ngày bắt đầu
+                                </b>
+                            </Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={startDate}
+                                placeholder="Chọn ngày bắt đầu"
+                                className='inputAddNewProduct'
+                                onChange={(e) => setStartDate(e.target.value)}
+                            >
+                            </Form.Control>
+                        </Form.Group>
 
+                        <Form.Group controlId='endDate'>
+                            <Form.Label>
+                                <b>
+                                    Ngày kết thúc
+                                </b>
+                            </Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={endDate}
+                                placeholder="Chọn ngày kết thúc"
+                                className='inputAddNewProduct'
+                                onChange={(e) => setEndDate(e.target.value)}
+                            >
+                            </Form.Control>
+                        </Form.Group>
+                    </div>
+                    <Form.Group controlId='priceDiscount'>
+                        <Form.Label>
+                            <b>
+                                Số lượng hàng
+                            </b>
+                        </Form.Label>
+                        <Form.Control
+                            required
+                            type="number"
+                            pattern="[0-9]+(\.[0-9]{1,2})?%?"
+                            value={stock}
+                            placeholder="Nhập số luợng hàng"
+                            className='inputAddNewProduct'
+                            step="1"
+                            onChange={(e) => setStock(e.target.value)}
+                        >
+                        </Form.Control>
+                    </Form.Group>
+
+                    <button style={{
+                        height: '50px',
+                        padding: '.5rem 3rem',
+                        border: 'none',
+                        borderRadius: '.5rem',
+                        backgroundColor: '#1a71ff',
+                        color: 'white'
+                    }} onClick={() => handleAddDetail()}>Thêm</button>
+                </div>
                 <Form.Group controlId="category">
                     <Form.Label>
                         <b>Loại mặt hàng</b>
