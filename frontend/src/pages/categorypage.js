@@ -57,11 +57,11 @@ function CategoryPage() {
 
     const LoadCategory = async () => {
         try {
-            const { data } = await axios.get(
+            await axios.get(
                 `${apiRoot}Category`
-            )
-            console.log(data)
-            setcategoryList(data)
+            ).then(res => {
+                setcategoryList(res.data)
+            })
         } catch {
             setcategoryList([])
         }
@@ -110,12 +110,13 @@ function CategoryPage() {
             }
         }
 
-        const { data } = await axios.post(
+        await axios.post(
             `${apiRoot}Category/AddCategory`,
             form_data,
             config
-        )
-        LoadCategory()
+        ).then(res => {
+            LoadCategory()
+        })
         setUrl5('')
         setInputValue('')
     }
@@ -156,7 +157,7 @@ function CategoryPage() {
         setInputValue(text)
         setUrl5(linkUrl)
     }
-    
+
     const HandleAddNew = () => {
         setInputValue('')
         setUrl5('')
@@ -272,7 +273,7 @@ function CategoryPage() {
                                     borderRadius: '.5rem',
                                     border: '1px solid grey',
                                     padding: '.3rem 1rem'
-                                }} value={inputValue} onChange={handleChange}/>
+                                }} value={inputValue} onChange={handleChange} />
                             </div>
                             <div style={{
                                 display: 'flex',

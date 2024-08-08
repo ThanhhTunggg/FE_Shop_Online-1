@@ -72,24 +72,27 @@ const ProductCreatePage = () => {
     };
 
     const handleAddDetail = () => {
-        if (parseInt(detailPriceDiscount, 10) > 100 && parseInt(detailPriceDiscount, 10) < 0) {
-            alert("Giảm giá là phần trăm < 100% và > 0%");
-        }
-        if (parseInt(detailPriceDiscount, 10) !== null) {
-            const newItem = {
-                'productDetailName': detailName,
-                'productDetailPrice': detailPrice,
-                'detailPriceDiscount': detailPriceDiscount,
-                'detailStock': stock,
-                'startDate': startDate,
-                'endDate': endDate
-            };
-            setItems([...items, newItem]);
-            setDetailName('');
-            setDetailPrice('');
-            setDetailPriceDiscount('');
-            setStartDate('');
-            setEndDate('');
+        if (parseInt(detailPriceDiscount, 10) === '' || detailPrice === '' || stock === '') {
+            alert("Vui lòng nhập đầy đủ các trường");
+        } else {
+            if (parseInt(detailPriceDiscount, 10) > 100 && parseInt(detailPriceDiscount, 10) < 0) {
+                alert("Giảm giá là phần trăm < 100% và > 0%");
+            }
+            if (parseInt(detailPriceDiscount, 10) !== null) {
+                const newItem = {
+                    'productDetailName': detailName,
+                    'productDetailPrice': detailPrice,
+                    'detailPriceDiscount': detailPriceDiscount,
+                    'detailStock': stock,
+                    'startDate': startDate,
+                    'endDate': endDate
+                };
+                setItems([...items, newItem]);
+                setDetailName('');
+                setDetailPrice('');
+                setDetailPriceDiscount('');
+                setStock('')
+            }
         }
     };
 
@@ -114,19 +117,21 @@ const ProductCreatePage = () => {
         const data4 = await postFile(file4);
         const data5 = await postFile(file5);
         let form_data = {
-            product: {"productName": name,
-            "productDescription": description,
-            "productDate": "2024-06-23T08:39:10.722Z",
-            "updateAt": "2024-06-23T08:39:10.722Z",
-            "deleteAt": "2024-06-23T08:39:10.722Z",
-            "createAt": "2024-06-23T08:39:10.722Z",
-            "userId": userInfo.userId,
-            "categoryId": category,
-            "img1": data1,
-            "img2": data2,
-            "img3": data3,
-            "img4": data4,
-            "img5": data5},
+            product: {
+                "productName": name,
+                "productDescription": description,
+                "productDate": "2024-06-23T08:39:10.722Z",
+                "updateAt": "2024-06-23T08:39:10.722Z",
+                "deleteAt": "2024-06-23T08:39:10.722Z",
+                "createAt": "2024-06-23T08:39:10.722Z",
+                "userId": userInfo.userId,
+                "categoryId": category,
+                "img1": data1,
+                "img2": data2,
+                "img3": data3,
+                "img4": data4,
+                "img5": data5
+            },
             productDetails: items
         }
 
@@ -310,11 +315,69 @@ const ProductCreatePage = () => {
                     </Form.Control>
                 </Form.Group>
                 <div>
+                    <div style={{
+                        border: '1px solid grey',
+                        width: '50%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        borderRadius: '.5rem .5rem 0 0',
+                        padding: '.5rem',
+                        textAlign: 'center',
+                        backgroundColor: '#d0f1f6'
+                    }}>
+                        <p style={{
+                            width: '20%',
+                            borderRight: '1px solid grey'
+                        }}>Tên</p>
+                        <p style={{
+                            width: '20%',
+                            borderRight: '1px solid grey'
+                        }}>Giá</p>
+                        <p style={{
+                            width: '20%',
+                            borderRight: '1px solid grey'
+                        }}>Số % giảm</p>
+                        <p style={{
+                            width: '20%',
+                            borderRight: '1px solid grey'
+                        }}>Số lượng</p>
+                        <p style={{
+                            width: '20%',
+                        }}></p>
+                    </div>
                     {items.map((item, index) => (
-                        <li key={index}>
-                            {item.productDetailName} - {item.productDetailPrice} - {item.detailPriceDiscount} - {item.startDate} - {item.endDate}
-                            <button onClick={() => handleDelete(index)}>Delete</button>
-                        </li>
+                        <div key={index} style={{
+                            border: '1px solid grey',
+                            width: '50%',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            padding: '.5rem'
+                        }}>
+                            <p style={{
+                                width: '20%',
+                                borderRight: '1px solid grey'
+                            }}>{item.productDetailName}</p>
+                            <p style={{
+                                width: '20%',
+                                borderRight: '1px solid grey'
+                            }}>{item.productDetailPrice}</p>
+                            <p style={{
+                                width: '20%',
+                                borderRight: '1px solid grey'
+                            }}>{item.detailPriceDiscount}</p>
+                            <p style={{
+                                width: '20%',
+                                borderRight: '1px solid grey'
+                            }}>{item.detailStock}</p>
+                            <button style={{
+                                width: '19%',
+                                border: 'none',
+                                backgroundColor: '#e05966',
+                                color: 'white',
+                                borderRadius: '.5rem',
+                                margin: '0 .5%'
+                            }} onClick={() => handleDelete(index)}>Delete</button>
+                        </div>
                     ))}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '70%' }}>
@@ -325,7 +388,6 @@ const ProductCreatePage = () => {
                             </b>
                         </Form.Label>
                         <Form.Control
-                            required
                             autoFocus={true}
                             type="text"
                             value={detailName}
