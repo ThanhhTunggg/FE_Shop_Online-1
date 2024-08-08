@@ -11,42 +11,6 @@ import apiRoot from '../Config/ConfigApi'
 import Product from '../components/Product'
 
 function ProductDetailsPage({ history, match }) {
-
-    const dispatch = useDispatch()
-
-    const [amount, setAmount] = useState(1)
-    const [imgLink, setImgLink] = useState('')
-    const [pricePro, setIPricePro] = useState('')
-    const [stockPro, setStockPro] = useState('')
-    const [productCheck, setProductCheck] = useState('')
-
-    // modal state and functions
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-
-    // product details reducer
-    const productDetailsReducer = useSelector(state => state.productDetailsReducer)
-    const { loading, error, product } = productDetailsReducer
-    var productArray = []
-    const [product1, setProduct1] = useState({});
-    const [productDetail, setProductDetail] = useState([]);
-
-    useEffect(() => {
-        if (product.product !== undefined) {
-            setProduct1(product.product)
-            setProductDetail(product.productDetails)
-            setIPricePro(product.productDetails[0].productDetailPrice)
-            setStockPro(product.productDetails[0].detailStock)
-            setImgLink(product1.img1)
-            setProductCheck(product.productDetails[0].productDetailId)
-        }
-        // productArray.push(product1)
-    }, [product, amount])
-
-
-
     const productsListReducer = useSelector(state => state.productsListReducer)
     const { loadingg, errorr, products } = productsListReducer
 
@@ -57,7 +21,52 @@ function ProductDetailsPage({ history, match }) {
     // product details reducer
     const deleteProductReducer = useSelector(state => state.deleteProductReducer)
     const { success: productDeletionSuccess } = deleteProductReducer
+    const dispatch = useDispatch()
 
+    const [amount, setAmount] = useState(1)
+    const [imgLink, setImgLink] = useState('')
+    const [pricePro, setIPricePro] = useState('')
+    const [stockPro, setStockPro] = useState('')
+    const [productCheck, setProductCheck] = useState('')
+    const [productArray , setProductArray] = useState([])
+
+    // modal state and functions
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+
+    // product details reducer
+    const productDetailsReducer = useSelector(state => state.productDetailsReducer)
+    const { loading, error, product } = productDetailsReducer
+    const [product1, setProduct1] = useState({});
+    const [productDetail, setProductDetail] = useState([]);
+    let productObArray = {}
+
+    useEffect(() => {
+        if (product.product !== undefined) {
+            setProduct1(product.product)
+            setProductDetail(product.productDetails)
+            setIPricePro(product.productDetails[0].productDetailPrice)
+            setStockPro(product.productDetails[0].detailStock)
+            setImgLink(product.product.img1)
+            setProductCheck(product.productDetails[0].productDetailId)
+        }
+    }, [product, amount])
+
+    useEffect(() => {
+        if (product1 != null && productDetail.length > 0) {
+            productObArray.imgUrl = product1.img1
+            productObArray.productDetailName = productDetail[0].productDetailName
+            productObArray.productDetailPrice = productDetail[0].productDetailPrice
+            productObArray.productPrice = productDetail[0].productDetailPrice * amount
+        }
+    }, [productDetail, product1])
+
+
+    useEffect(() => {
+        setProductArray(productObArray)
+    }, [productObArray])
     useEffect(() => {
         dispatch(getProductDetails(match.params.id))
         dispatch({
@@ -73,7 +82,14 @@ function ProductDetailsPage({ history, match }) {
 
     // product delete confirmation
     const confirmDelete = () => {
-        dispatch(deleteProduct(match.params.id))
+        // dispatch(deleteProduct(match.params.id))
+        axios.delete(`${apiRoot}Product/removeProduct/${match.params.id}`)
+            .then(response => {
+                history.push('/')
+            })
+            .catch(error => {
+                console.error("loi");
+            })
         handleClose()
     }
 
@@ -117,6 +133,32 @@ function ProductDetailsPage({ history, match }) {
             console.error("Error fetching cart data:", error);
         }
     }
+    
+    const AddCart1 = async (id) => {
+        try {
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+
+            const cardData = {
+                id: userInfo.userId,
+                productId: id,
+                detailProductId: productCheck,
+                amount: amount
+            }
+            // api call
+            const { data } = await axios.post(
+                `${apiRoot}Cart/AddCart`,
+                cardData,
+                config
+            )
+            history.push('/stripe-card-details')
+        } catch (error) {
+            console.error("Error fetching cart data:", error);
+        }
+    }
 
     const handleButtonAdd = (max) => {
         var value = (amount + 1) > max ? max : (amount + 1)
@@ -139,10 +181,14 @@ function ProductDetailsPage({ history, match }) {
     const handlePriceSet = (price, idDetail) => {
         setIPricePro(price)
         productDetail.forEach(e => {
-            if(e.productDetailId === idDetail){
+            if (e.productDetailId === idDetail) {
                 setProductCheck(idDetail)
             }
         });
+    }
+
+    const HandleEdit = (id) => {
+        history.push(`/edit-product/${id}/`)
     }
     return (
         <div>
@@ -154,16 +200,17 @@ function ProductDetailsPage({ history, match }) {
                         <Modal.Title>
                             <i style={{ color: "#e6e600" }} className="fas fa-exclamation-triangle"></i>
                             {" "}
-                            Delete Confirmation
+                            Xác nhận xoá sản phẩm
                         </Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Are you sure you want to delete this product <em>{product1.productName}</em>?</Modal.Body>
+                    <Modal.Body>Bạn có chắc chắn muốn xoá sản phẩm <em>{product1.productName}</em>?</Modal.Body>
+                    <Modal.Body>Các đơn hàng vẫn sẽ được giao.</Modal.Body>
                     <Modal.Footer>
                         <Button variant="danger" onClick={() => confirmDelete()}>
-                            Confirm Delete
+                            Xác nhận Xoá
                         </Button>
                         <Button variant="primary" onClick={handleClose}>
-                            Cancel
+                            Huỷ
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -212,7 +259,7 @@ function ProductDetailsPage({ history, match }) {
                                     <span style={{ display: "flex" }}>
                                         <button
                                             className="mt-2 btn btn-primary button-focus-css"
-                                            onClick={() => history.push(`/product-update/${product1.productId}/`)}
+                                            onClick={() => HandleEdit(product1.productId)}
                                             style={{ width: "100%" }}
                                         >Chỉnh sửa sản phẩm
                                         </button>
@@ -253,18 +300,18 @@ function ProductDetailsPage({ history, match }) {
 
                                 <div style={{ display: 'flex' }}>
                                     {productDetail.length > 0 && productDetail.map(x => (
-                                        productCheck === x.productDetailId ? (<div style={{backgroundColor: '#1a71ff',color: 'white',  borderRadius: '.5rem', cursor: 'pointer', border: '1px solid grey', marginRight: '.5rem', textAlign: 'center', padding: '.2rem 1rem' }}
+                                        productCheck === x.productDetailId ? (<div style={{ backgroundColor: '#1a71ff', color: 'white', borderRadius: '.5rem', cursor: 'pointer', border: '1px solid grey', marginRight: '.5rem', textAlign: 'center', padding: '.2rem 1rem' }}
                                             onClick={() => handlePriceSet(x.productDetailPrice, x.productDetailId)}>
                                             <p style={{
                                                 width: 'fit-content'
                                             }}>{x.productDetailName}</p>
                                         </div>)
-                                        : (<div style={{ borderRadius: '.5rem', cursor: 'pointer', border: '1px solid grey', marginRight: '.5rem', textAlign: 'center', padding: '.2rem 1rem' }}
-                                            onClick={() => handlePriceSet(x.productDetailPrice, x.productDetailId)}>
-                                            <p style={{
-                                                width: 'fit-content'
-                                            }}>{x.productDetailName}</p>
-                                        </div>)
+                                            : (<div style={{ borderRadius: '.5rem', cursor: 'pointer', border: '1px solid grey', marginRight: '.5rem', textAlign: 'center', padding: '.2rem 1rem' }}
+                                                onClick={() => handlePriceSet(x.productDetailPrice, x.productDetailId)}>
+                                                <p style={{
+                                                    width: 'fit-content'
+                                                }}>{x.productDetailName}</p>
+                                            </div>)
                                     ))}
                                 </div>
                                 <span style={{
@@ -347,7 +394,7 @@ function ProductDetailsPage({ history, match }) {
                                                 }}>
                                                     <Link to={{
                                                         pathname: `${product1.productId}/checkout`,
-                                                        state: { productArray }
+                                                        state: {productArray}
                                                     }}
                                                         style={{
                                                             width: '40%'
@@ -401,14 +448,13 @@ function ProductDetailsPage({ history, match }) {
                                                     display: 'flex',
                                                     justifyContent: 'space-between'
                                                 }}>
-                                                    <Link to={{
-                                                        pathname: `${product1.productId}/checkout`,
-                                                        state: { productArray }
-                                                    }}
+                                                    <div 
                                                         style={{
                                                             width: '40%'
                                                         }}>
-                                                        <button className="btn btn-warning ml-3"
+                                                        <button className="btn btn-warning ml-3" onClick={() => {
+                                                            AddCart1(product1.productId)
+                                                        }}
                                                             style={{
                                                                 backgroundColor: '#f05d40',
                                                                 color: 'white',
@@ -418,7 +464,7 @@ function ProductDetailsPage({ history, match }) {
                                                         >
                                                             Mua ngay
                                                         </button>
-                                                    </Link>
+                                                    </div>
 
 
                                                     <button className="btn btn-primary"
@@ -501,7 +547,7 @@ function ProductDetailsPage({ history, match }) {
                         </div>
                     </>
             }
-        </div >
+        </div>
 
     )
 }

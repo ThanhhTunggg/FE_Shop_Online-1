@@ -57,10 +57,14 @@ const CheckoutPage = ({ match }) => {
     const location = useLocation();
     const [productLst, setProductLst] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [listAdd, setListAdd] = useState([])
+    const [showChoose, setShowChoose] = useState(false)
 
     useEffect(() => {
         if (location.state && location.state.productArray) {
             setProductLst(location.state.productArray);
+            console.log(location.state.productArray[0]);
+            
             const total = location.state.productArray.reduce((sum, product) => sum + (product.productSalePrice
                 ? product.productSalePrice * product.amount
                 : product.productPrice * product.amount), 0);
@@ -91,35 +95,37 @@ const CheckoutPage = ({ match }) => {
         const { data } = await axios.get(apiRoot + `Address/getByUsId/${userInfo.userId}`)
 
         setSelectedAddressId(data[0].addressID)
-        const { dataDetail } = await axios.get(apiRoot + `Address/getDetailAddress/${data[0].matp}/${data[0].maqh}/${data[0].mapx}`)
-        setSelectedAddress(dataDetail + ' ' + data[0].detail)
+        setSelectedAddress(data[0].detail)
     }
 
     const HandleAddOrder = async () => {
         const newItems = productLst.map(x => ({
-            'cartId': x.cartId,
-            'productDetailName': x.productDetailName,
-            'TotalMoney': x.productPrice * x.amount,
-            'productName': x.productName,
-            'userId': x.userId,
-            'amount': x.amount,
-            'productId': x.productId,
-            'addressId': selectedAddressId
+            cartId: x.cartId,
+            productDetailName: x.productDetailName,
+            TotalMoney: x.productPrice * x.amount,
+            productName: x.productName,
+            userId: x.userId,
+            amount: x.amount,
+            productId: x.productId,
+            addressId: selectedAddressId,
+            productDetailId: x.productDetailId,
+            imgUrl: x.img1
         }));
-        
+
         setItems(newItems);
-        
+
 
         const config = {
             headers: {
                 "Content-Type": "application/json",
             }
-        }        
+        }
 
         const formData = {
-            request: { items: newItems }
+            Items: newItems
         }
-        
+
+        console.log(formData);
 
         // api call
         const { data } = await axios.post(
@@ -127,10 +133,53 @@ const CheckoutPage = ({ match }) => {
             formData,
             config
         );
+
+        if (data === 'OK') {
+            history.push("/success");
+        }
+    };
+
+    const ChangeAddressLocate = () => {
+        axios.get(`${apiRoot}Address/getByUsId/${userInfo.userId}`)
+            .then(res => {
+                setListAdd(res.data)
+                setShowChoose(true)
+            }).catch(err => {
+                console.log('loi');
+            })
+    }
+
+    const handleAdd = (item) => {   
+        setSelectedAddressId(item.addressID)
+        setSelectedAddress(item.detail)
+        setShowChoose(false)
     }
 
     return (
         <div>
+            {showChoose && <div style={{
+                position: 'fixed', zIndex: '80',
+                backgroundColor: 'rgb(31, 31, 31, .5)',
+                bottom: '0',
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <div style={{
+                    backgroundColor: 'white',
+                    width: '50%',
+                    height: '20vh'
+                }}>
+                    {listAdd.map((ad, index) => (
+                        <div key={index}>
+                            {ad.detail}
+                            <button onClick={() => handleAdd(ad)}>Chọn</button>
+                        </div>
+                    ))}
+                </div>
+            </div>}
             {cardCreationError ? <Message variant='danger'>{cardCreationError}</Message> : ""}
             {loading
                 &&
@@ -206,14 +255,10 @@ const CheckoutPage = ({ match }) => {
                                 </div>
                             </div>
 
-                            <div style={{ display: "flex", marginTop: '1rem' }}>
+                            <div style={{ marginTop: '1rem' }}>
                                 <h3>Địa chỉ nhận hàng</h3>
-                                <Link
-                                    className="ml-2 mt-2"
-                                    to="/all-addresses/"
-                                >
-                                    {selectedAddress}
-                                </Link>
+                                <p>{selectedAddress}</p>
+                                <button onClick={() => ChangeAddressLocate()}>Thay đổi</button>
                             </div>
                             <UserAddressComponent handleAddressId={handleAddressId} />
                         </Col>

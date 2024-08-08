@@ -8,6 +8,9 @@ import { changeDeliveryStatus } from '../actions/productActions'
 import { CHANGE_DELIVERY_STATUS_RESET } from '../constants'
 import SearchBarForOrdersPage from '../components/SearchBarForOrdersPage'
 import Message from '../components/Message'
+import axios from 'axios'
+import apiRoot from '../Config/ConfigApi'
+import { Link } from 'react-router-dom/cjs/react-router-dom.min'
 
 
 function OrdersListPage() {
@@ -21,7 +24,7 @@ function OrdersListPage() {
     const [currentDateInfo] = useState(todays_date)
     const [idOfchangeDeliveryStatus, setIdOfchangeDeliveryStatus] = useState(0)
     const [cloneSearchTerm, setCloneSearchTerm] = useState("")
-
+    const [ordersData, setOrdersData] = useState([]);
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
     const { userInfo } = userLoginReducer
@@ -42,10 +45,19 @@ function OrdersListPage() {
         if (!userInfo) {
             history.push("/login")
         } else {
-            dispatch(checkTokenValidation())
-            dispatch(getAllOrders())
+            GetAllOrdersUsID()
         }
     }, [userInfo, dispatch, history])
+
+    const GetAllOrdersUsID = () => {
+        axios.get(`${apiRoot}GetOrderID/${userInfo.userId}`) // Replace with your actual API endpoint
+            .then(response => {
+                setOrdersData(response.data);
+            })
+            .catch(error => {
+                console.error('There was an error fetching the orders!', error);
+            });
+    }
 
     if (userInfo && tokenError === "Request failed with status code 401") {
         alert("Session expired, please login again.")
@@ -84,97 +96,68 @@ function OrdersListPage() {
                     <Spinner animation="border" />
                 </span>
             </span>}
-            {userInfo.admin && <SearchBarForOrdersPage handleSearchTerm={handleSearchTerm} placeholderValue={placeholderValue} />}
-                {orders.length > 0 ?
-                <Table className="mt-2" striped bordered>
-                    <thead>
-                        <tr className="p-3 bg-info text-white text-center">
-                            <th>Order Id</th>
-                            <th>Customer Name</th>
-                            <th>Card Used</th>
-                            <th>Delivery Address</th>
-                            <th>Ordered Item</th>
-                            <th>Paid Status</th>
-                            <th>Paid On</th>
-                            <th>Total Amount</th>
-                            <th>Delivered Status</th>
-                            <th>Delivered On</th>
-                            {userInfo.admin &&
-                                <th>Delivery Status</th>
-                            }
-                        </tr>
-                    </thead>
-
-                    {/* filter orders by name, address or ordered item */}
-
-                    {orders.filter((item) => (
-
-                        item.name.toLowerCase().includes(cloneSearchTerm)
-                        ||
-                        item.ordered_item.toLowerCase().includes(cloneSearchTerm)
-                        ||
-                        item.address.toLowerCase().includes(cloneSearchTerm)
-                    )
-
-                    ).map((order, idx) => (
-                        <tbody key={idx}>
-                            <tr className="text-center">
-                                <td>
-                                    {order.id}
-                                </td>
-                                <td>{order.name}</td>
-                                <td>{order.card_number}</td>
-                                <td>{order.address}</td>
-                                <td>{order.ordered_item}</td>
-                                <td>{order.paid_status ?
-                                    <i className="fas fa-check-circle text-success"></i>
-                                    :
-                                    <i className="fas fa-times-circle text-danger"></i>
-                                }</td>
-                                <td>{dateCheck(order.paid_at)}</td>
-                                <td>{order.total_price} INR</td>
-                                <td>{order.is_delivered ?
-                                    <i className="fas fa-check-circle text-success"></i>
-                                    :
-                                    <i className="fas fa-times-circle text-danger"></i>
-                                }</td>
-                                <td>{order.delivered_at}</td>
-                                {userInfo.admin &&
-                                    <td>
-                                        {order.is_delivered ?
-                                            <button
-                                                className="btn btn-outline-danger btn-sm"
-                                                onClick={() => changeDeliveryStatusHandler(order.id, false)}
-                                            >
-                                                {deliveryStatusChangeSpinner
-                                                    &&
-                                                    idOfchangeDeliveryStatus === order.id
-                                                    ?
-                                                    <Spinner animation="border" />
-                                                    :
-                                                    "Mark as Undelivered"}
-                                            </button>
-                                            :
-                                            <button
-                                                className="btn btn-outline-primary btn-sm"
-                                                onClick={() => changeDeliveryStatusHandler(order.id, true)}
-                                            >
-                                                {deliveryStatusChangeSpinner
-                                                    &&
-                                                    idOfchangeDeliveryStatus === order.id
-                                                    ?
-                                                    <Spinner animation="border" />
-                                                    :
-                                                    "Mark as delivered"}
-                                            </button>
-                                        }
-                                    </td>
-                                }
-                            </tr>
-                        </tbody>
+            {ordersData.length > 0 ?
+                <div style={{
+                    padding: '2rem 0',
+                    height: '90vh',
+                    backgroundColor: 'white'
+                }}>
+                    {ordersData.map((orderObj, index) => (
+                        <div style={{
+                            margin: '.5rem 0'
+                        }}>
+                            <div key={index}>
+                                <div style={{
+                                    display: 'flex',
+                                    width: '70%',
+                                    justifyContent: 'space-between',
+                                    border: '1px solid grey',
+                                    padding: '.5rem 1rem',
+                                    margin: '0 15%',
+                                    borderRadius: '.5rem .5rem 0 0 ',
+                                    backgroundColor: orderObj.orders.orderStatus === 5 && '#ffa0ac'
+                                }}>
+                                    <b>{new Date(orderObj.orders.orderDate).toLocaleDateString()}</b>
+                                    {orderObj.orders.orderStatus === 1 && <b>Đã đặt</b>}
+                                    {orderObj.orders.orderStatus === 3 && <b>Đang giao</b>}
+                                    {orderObj.orders.orderStatus === 4 && <b>Đã giao</b>}
+                                    {orderObj.orders.orderStatus === 5 && <b>Đã Huỷ</b>}
+                                    <b>{orderObj.orders.addressDetail}</b>
+                                    {orderObj.orders.orderStatus === 1 && <button style={{
+                                        border: 'none',
+                                        backgroundColor: '#ff6075',
+                                        borderRadius: '.5rem',
+                                        padding: '.5rem 2rem'
+                                    }}><b>Huỷ</b></button>}
+                                </div>
+                                <div style={{
+                                    borderRadius: '0 0 .5rem .5rem',
+                                    border: '1px solid grey',
+                                    width: '70%',
+                                    margin: '0 15%',
+                                    padding: '0 0 0 5rem',
+                                }}>
+                                    {orderObj.orderDetails.map((detail, idx) => (
+                                        <Link to={`/product/${detail.productId}`}>
+                                            <div key={idx} style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                padding: '.5rem 1rem',
+                                                color: 'black'
+                                            }}>
+                                                <p>Product Name: {detail.productName}</p>
+                                                <p>Product Detail Name: {detail.productDetailName}</p>
+                                                <p>Amount: {detail.amount}</p>
+                                                <p>Total Money: {detail.totalMoney}</p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                </Table>
-                : <Message variant="info">No orders yet.</Message> }
+                </div>
+                : <Message variant="info">No orders yet.</Message>}
         </div>
     )
 }

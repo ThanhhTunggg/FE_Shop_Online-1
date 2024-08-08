@@ -163,7 +163,7 @@ function ProductsListPage() {
                                             fontSize: '22px',
                                         }}>Quản lý danh mục sản phẩm</p>
                                     </Link>
-                                    <Link to="/new-product/">
+                                    <Link to="/manage/">
                                         <p style={{
                                             backgroundColor: '#30d46f',
                                             color: 'white',

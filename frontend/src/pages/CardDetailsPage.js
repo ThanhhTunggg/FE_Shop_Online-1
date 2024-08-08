@@ -59,6 +59,9 @@ const CardDetailsPage = () => {
         }
     };
 
+    useEffect(() => {
+        console.log(productArray);
+    }, [productArray])
     const getCart = async () => {
         try {
             const response = await axios.get(`${apiRoot}Cart/${userInfo.userId}`);

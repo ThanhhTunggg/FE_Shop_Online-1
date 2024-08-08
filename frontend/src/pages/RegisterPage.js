@@ -4,10 +4,13 @@ import { Link } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { register } from '../actions/userActions'
 import Message from '../components/Message'
+import axios from 'axios'
+import apiRoot from '../Config/ConfigApi'
 
 function RegisterPage({ history, variant }) {
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
+    const [phone, setPhone] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const [message, setMessage] = useState("")
@@ -29,7 +32,25 @@ function RegisterPage({ history, variant }) {
         if (password !== confirmPassword) {
             setMessage('Passwords do not match!')
         } else {
-            dispatch(register(username, email, password))
+            let form_data = {
+                "userId": 0,
+                "userName": username,
+                "userPhone": phone,
+                "userEmail": email,
+                "userPassword": password,
+                "userPoint": 0,
+                "userRole": 0
+            }
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+
+            axios.post(`${apiRoot}User/AddUsers`, form_data,
+                config).then(res => {
+                    history.push('/login')
+                })
         }
     }
 
@@ -72,6 +93,20 @@ function RegisterPage({ history, variant }) {
                                 placeholder="Nhập Email của bạn"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                            >
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId='phone'>
+                            <Form.Label style={{ fontSize: '1.2rem' }}>
+                                Số điện thoại
+                            </Form.Label>
+                            <Form.Control
+                                style={{ borderRadius: '1rem', height: '3rem' }}
+                                required
+                                type="number"
+                                placeholder="Nhập Số điện thoại của bạn"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                             >
                             </Form.Control>
                         </Form.Group>

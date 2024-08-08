@@ -20,6 +20,9 @@ import ProductUpdatePage from './pages/ProductUpdatePage'
 import NotFound from './pages/NotFoundPage'
 import ProductsSearchPage from './pages/ProductSearchpage'
 import CategoryPage from './pages/categorypage'
+import Success from './pages/Success'
+import EditProductPage from './pages/EditProductPage'
+import ManageMoneyPage from './pages/ManageMoneyPage'
 
 
 const App = () => {
@@ -53,6 +56,9 @@ const App = () => {
             <Route path="/all-orders/" component={OrdersListPage} exact />
             <Route path="/search/:key/" component={ProductsSearchPage} exact />
             <Route path="/category/" component={CategoryPage} exact />
+            <Route path="/success/" component={Success} exact />
+            <Route path="/edit-product/:id/" component={EditProductPage} exact />
+            <Route path="/manage/" component={ManageMoneyPage} exact />
             <Route path="" component={NotFound} exact />
           </Switch>
         </div>

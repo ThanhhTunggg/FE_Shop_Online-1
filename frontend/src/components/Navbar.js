@@ -80,9 +80,9 @@ function NavBar() {
                                     <LinkContainer to="/account">
                                         <NavDropdown.Item>Cài đặt tài khoản</NavDropdown.Item>
                                     </LinkContainer>
-                                    <LinkContainer to="/all-orders/">
+                                    {userInfo && userInfo.userRole !== 1 ? <LinkContainer to="/all-orders/">
                                         <NavDropdown.Item>Đơn hàng</NavDropdown.Item>
-                                    </LinkContainer>
+                                    </LinkContainer> : ''}
                                     <NavDropdown.Item onClick={logoutHandler}>
                                         Đăng xuất
                                     </NavDropdown.Item>

@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Form, Button, Alert } from 'react-bootstrap'
+import { Form, Button, Alert, Modal } from 'react-bootstrap'
 import { createProduct } from '../actions/productActions'
 import { useHistory } from 'react-router'
 import { checkTokenValidation, logout } from '../actions/userActions'
 import { CREATE_PRODUCT_RESET } from '../constants'
 import Message from '../components/Message';
+import { notification, Space } from 'antd';
 import axios from 'axios'
 import api from '../Config/ConfigApi'
 import apiRoot from '../Config/ConfigApi'
 
 
-const ProductCreatePage = () => {
+const EditProductPage = ({ match }) => {
 
     let history = useHistory()
     const dispatch = useDispatch()
@@ -24,6 +25,7 @@ const ProductCreatePage = () => {
     const [image, setImage] = useState(null)
     const [category, setcategory] = useState(null)
     const [categoryList, setcategoryList] = useState('')
+    const [itemdelete, setItemdelete] = useState('')
 
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
@@ -54,22 +56,62 @@ const ProductCreatePage = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [items, setItems] = useState([]);
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [api, contextHolder] = notification.useNotification();
 
     useEffect(() => {
-        if (!userInfo) {
+        if (!userInfo || !userInfo.userRole === 1) {
             history.push("/login")
         }
-        dispatch(checkTokenValidation())
-    }, [dispatch, userInfo, history])
+        // dispatch(getProductDetails(match.params.id))
+    }, [dispatch, userInfo, history, match])
 
     useEffect(() => {
+        LoadProductDetail()
         LoadCategory()
     }, [])
 
-    const handleDelete = (index) => {
-        const newItems = items.filter((_, i) => i !== index);
-        setItems(newItems);
+    const LoadProductDetail = async () => {
+        await axios.get(apiRoot + `Product/${match.params.id}/`)
+            .then(response => {
+                var d = response.data
+                var p = d.product
+                setItems(d.productDetails)
+                setName(p.productName)
+                setDescription(p.productDescription)
+                setcategory(p.categoryId)
+                setUrl1(p.img1)
+                setUrl2(p.img2)
+                setUrl3(p.img3)
+                setUrl4(p.img4)
+                setUrl5(p.img5)
+            })
+            .catch(err => {
+                console.log("loi");
+            })
+    }
+
+    const handleDelete = (index, item) => {
+        if (item.productDetailId === null) {
+            const newItems = items.filter((_, i) => i !== index);
+            setItems(newItems);
+        } else {
+            setItemdelete(item)
+            handleShow()
+        }
     };
+
+    const handleEdit = (item) => {
+        setDetailName(item.productDetailName)
+        setDetailPrice(item.productDetailPrice)
+        setDetailPriceDiscount(item.detailPriceDiscount)
+        setStock(item.detailStock)
+        setStartDate(item.StartDate)
+        setEndDate(item.EndDate)
+    }
 
     const handleAddDetail = () => {
         if (parseInt(detailPriceDiscount, 10) > 100 && parseInt(detailPriceDiscount, 10) < 0) {
@@ -81,8 +123,6 @@ const ProductCreatePage = () => {
                 'productDetailPrice': detailPrice,
                 'detailPriceDiscount': detailPriceDiscount,
                 'detailStock': stock,
-                'startDate': startDate,
-                'endDate': endDate
             };
             setItems([...items, newItem]);
             setDetailName('');
@@ -90,6 +130,7 @@ const ProductCreatePage = () => {
             setDetailPriceDiscount('');
             setStartDate('');
             setEndDate('');
+            setStock('')
         }
     };
 
@@ -105,32 +146,49 @@ const ProductCreatePage = () => {
         }
     }
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-
+    const onSubmit = async () => {
         const data1 = await postFile(file1);
         const data2 = await postFile(file2);
         const data3 = await postFile(file3);
         const data4 = await postFile(file4);
         const data5 = await postFile(file5);
         let form_data = {
-            product: {"productName": name,
-            "productDescription": description,
-            "productDate": "2024-06-23T08:39:10.722Z",
-            "updateAt": "2024-06-23T08:39:10.722Z",
-            "deleteAt": "2024-06-23T08:39:10.722Z",
-            "createAt": "2024-06-23T08:39:10.722Z",
-            "userId": userInfo.userId,
-            "categoryId": category,
-            "img1": data1,
-            "img2": data2,
-            "img3": data3,
-            "img4": data4,
-            "img5": data5},
+            product: {
+                "productId": match.params.id,
+                "productName": name,
+                "productDescription": description,
+                "productDate": "2024-06-23T08:39:10.722Z",
+                "updateAt": "2024-06-23T08:39:10.722Z",
+                "deleteAt": "2024-06-23T08:39:10.722Z",
+                "createAt": "2024-06-23T08:39:10.722Z",
+                "userId": userInfo.userId,
+                "categoryId": category,
+                "img1": data1,
+                "img2": data2,
+                "img3": data3,
+                "img4": data4,
+                "img5": data5
+            },
             productDetails: items
         }
 
-        dispatch(createProduct(form_data))
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        // api call
+        await axios.put(
+            `${apiRoot}Product`,
+            form_data,
+            config
+        ).then(res => {
+            history.push('/')
+        }).catch(err => {
+            history.push('/')
+        })
     }
 
     const handleFileChange = (event) => {
@@ -225,12 +283,15 @@ const ProductCreatePage = () => {
 
     async function postFile(postData) {
         try {
-            const response = await fetch("https://script.google.com/macros/s/AKfycbzXqSkxwM-WpNHetg2hkbIyTwiKXVVu0D4QUdrW4QSQjWF0SDTwT1sKrpMCNmAyGIDE/exec", {
-                method: 'POST',
-                body: JSON.stringify(postData),
-            })
-            const data = await response.json();
-            return data.link
+            if (postData !== null) {
+                const response = await fetch("https://script.google.com/macros/s/AKfycbzXqSkxwM-WpNHetg2hkbIyTwiKXVVu0D4QUdrW4QSQjWF0SDTwT1sKrpMCNmAyGIDE/exec", {
+                    method: 'POST',
+                    body: JSON.stringify(postData),
+                })
+                const data = await response.json();
+                return data.link
+            }
+            return ""
         } catch {
             return ""
         }
@@ -257,6 +318,17 @@ const ProductCreatePage = () => {
         setImages(prevImages => prevImages.filter((_, i) => i !== index));
     };
 
+    const confirmDelete = () => {
+        axios.delete(`${apiRoot}Product/removeDetailProduct/${itemdelete.productDetailId}`)
+            .then(response => {
+                window.location.reload()
+            })
+            .catch(error => {
+                console.error("loi");
+            })
+        handleClose()
+    }
+
     return (
         <div style={{
             width: '100%',
@@ -268,11 +340,33 @@ const ProductCreatePage = () => {
             overflowY: 'auto',
             boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px'
         }}>
+            {contextHolder}
+            {/* Modal Start*/}
+            <div>
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            <i style={{ color: "#e6e600" }} className="fas fa-exclamation-triangle"></i>
+                            {" "}
+                            Xác nhận xoá sản phẩm
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Bạn có chắc chắn muốn xoá sản phẩm ?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={() => confirmDelete()}>
+                            Xác nhận Xoá
+                        </Button>
+                        <Button variant="primary" onClick={handleClose}>
+                            Huỷ
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
             {/* {productCreationError && <Message variant='danger'>{productCreationError.image[0]}</Message>} */}
             <h3 style={{
                 textAlign: 'center'
             }}>Thêm sản phẩm mới</h3>
-            <Form onSubmit={onSubmit}>
+            <div>
 
                 <Form.Group controlId='name'>
                     <Form.Label>
@@ -313,7 +407,7 @@ const ProductCreatePage = () => {
                     {items.map((item, index) => (
                         <li key={index}>
                             {item.productDetailName} - {item.productDetailPrice} - {item.detailPriceDiscount} - {item.startDate} - {item.endDate}
-                            <button onClick={() => handleDelete(index)}>Delete</button>
+                            <button onClick={() => handleDelete(index, item)}>Xoá</button>
                         </li>
                     ))}
                 </div>
@@ -325,7 +419,6 @@ const ProductCreatePage = () => {
                             </b>
                         </Form.Label>
                         <Form.Control
-                            required
                             autoFocus={true}
                             type="text"
                             value={detailName}
@@ -343,7 +436,6 @@ const ProductCreatePage = () => {
                             </b>
                         </Form.Label>
                         <Form.Control
-                            required
                             type="number"
                             value={detailPrice}
                             placeholder="Nhập giá VND"
@@ -377,7 +469,6 @@ const ProductCreatePage = () => {
                             </b>
                         </Form.Label>
                         <Form.Control
-                            required
                             type="number"
                             pattern="[0-9]+(\.[0-9]{1,2})?%?"
                             value={stock}
@@ -466,7 +557,6 @@ const ProductCreatePage = () => {
                         <div className="file-upload-container">
                             <Form.Control
                                 type="file"
-                                required
                                 accept="image/*"
                                 onChange={handleFileChange}
                                 disabled={images.length >= 1}
@@ -559,8 +649,8 @@ const ProductCreatePage = () => {
                     style={{
                         borderRadius: '.5rem',
                         padding: '.5rem 2rem'
-                    }}>
-                    Thêm sản phẩm
+                    }} onClick={() => onSubmit()}>
+                    Lưu thay đổi
                 </button>
                 <button type="submit" class="btn btn-danger"
                     style={{
@@ -571,9 +661,9 @@ const ProductCreatePage = () => {
                 >
                     Huỷ
                 </button>
-            </Form >
-        </div >
+            </div>
+        </div>
     )
 }
 
-export default ProductCreatePage
+export default EditProductPage

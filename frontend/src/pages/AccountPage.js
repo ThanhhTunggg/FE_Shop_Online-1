@@ -30,6 +30,12 @@ function AccountPage() {
     const [selectedDistrict, setSelectedDistrict] = useState()
     const [selectedWard, setSelectedWard] = useState()
     const [cityInput, setCityInput] = useState('')
+    const [listAdd, setListAdd] = useState([])
+    const [selectedAdd, setSelectedAdd] = useState('')
+    const [showActiveBtn, setShowActiveBtn] = useState(true)
+    const [oldPass, setOldPass] = useState('')
+    const [newPass, setNewPass] = useState('')
+    const [reNewPass, setReNewPass] = useState('')
 
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
@@ -57,6 +63,46 @@ function AccountPage() {
             getCity()
         }
     }, [checkOption])
+
+    const HandleChangePass = async () => {
+        if (newPass === reNewPass) {
+            try {
+                const config = {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                }
+
+                const request = {
+                    userId: userInfo.userId,
+                    oldPass: oldPass,
+                    newPass: newPass,
+                    reNewPass: reNewPass
+                }
+                // api call
+                await axios.post(
+                    `${apiRoot}User/ChangePass`,
+                    request,
+                    config
+                ).then(res => {
+                    window.location.reload()
+                })
+            } catch (error) {
+                console.error("Error fetching cart data:", error);
+            }
+        }
+    }
+
+    const handleAddress = (nu) => {
+        setCheckOption(nu)
+        setCityInput(null)
+        axios.get(`${apiRoot}Address/getByUsId/${userInfo.userId}`)
+            .then(res => {
+                setListAdd(res.data)
+            }).catch(err => {
+                console.log('loi');
+            })
+    }
 
     const handleCityInputChange = (e) => {
         setCityInput(e.target.value); // Cập nhật giá trị input của thành phố
@@ -138,11 +184,60 @@ function AccountPage() {
                 detail: cityInput
             }
             // api call
-            const { data } = await axios.post(
+            await axios.post(
                 `${apiRoot}Address/AddAddress`,
                 cardData,
                 config
-            )
+            ).then(res => {
+                axios.get(`${apiRoot}Address/getByUsId/${userInfo.userId}`)
+                    .then(res => {
+                        setListAdd(res.data)
+                        setSelectedCity('')
+                        setSelectedDistrict('')
+                        setSelectedWard('')
+                        setCityInput('')
+                    }).catch(err => {
+                        console.log('loi');
+                    })
+            })
+        } catch (error) {
+            console.error("Error fetching cart data:", error);
+        }
+    }
+
+    const UpdateAddress = async () => {
+        try {
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+
+            const cardData = {
+                addressID: selectedAdd,
+                userId: userInfo.userId,
+                matp: selectedCity,
+                maqh: selectedDistrict,
+                mapx: selectedWard,
+                detail: cityInput
+            }
+            // api call
+            await axios.put(
+                `${apiRoot}Address`,
+                cardData,
+                config
+            ).then(res => {
+                axios.get(`${apiRoot}Address/getByUsId/${userInfo.userId}`)
+                    .then(res => {
+                        setListAdd(res.data)
+                        setSelectedCity('')
+                        setSelectedDistrict('')
+                        setSelectedWard('')
+                        setCityInput('')
+                    }).catch(err => {
+                        console.log('loi');
+                    })
+            })
             api['success']({
                 message: 'Thêm thành công',
                 description:
@@ -151,6 +246,25 @@ function AccountPage() {
         } catch (error) {
             console.error("Error fetching cart data:", error);
         }
+    }
+
+    const handleEditAdd = (item) => {
+        setSelectedAdd(item.addressID)
+        setSelectedCity(item.matp)
+        getDistrict(item.matp)
+        setSelectedDistrict(item.maqh)
+        getWard(item.maqh)
+        setSelectedWard(item.mapx)
+        setCityInput(item.detail.split(',')[0])
+        setShowActiveBtn(false)
+    }
+
+    const AddNewAd = () => {
+        setShowActiveBtn(true)
+        setSelectedCity('')
+        setSelectedDistrict('')
+        setSelectedWard('')
+        setCityInput('')
     }
 
     const renderData = () => {
@@ -197,7 +311,7 @@ function AccountPage() {
                                 }
                                 {checkOption === 4
                                     ? <p style={{ backgroundColor: 'rgb(251, 100, 69)', color: 'white' }}>Cập nhật địa chỉ</p>
-                                    : <p onClick={() => { setCheckOption(4) }}>Cập nhật địa chỉ</p>
+                                    : <p onClick={() => { handleAddress(4) }}>Cập nhật địa chỉ</p>
                                 }
                             </div>
                             {checkOption === 1 && <div style={{
@@ -371,7 +485,8 @@ function AccountPage() {
                                         borderRadius: '.5rem',
                                         outline: 'none',
                                         marginTop: '.5rem'
-                                    }} />
+                                    }} type='password' value={oldPass}
+                                        onChange={(e) => setOldPass(e.target.value)} />
                                 </div>
                                 <div style={{
                                     marginBottom: '1rem',
@@ -387,7 +502,8 @@ function AccountPage() {
                                         outline: 'none',
                                         marginTop: '.5rem',
                                         marginRight: '.5rem'
-                                    }} />
+                                    }} type='password' value={newPass}
+                                        onChange={(e) => setNewPass(e.target.value)} />
                                 </div>
                                 <div>
                                     <p style={{
@@ -400,7 +516,8 @@ function AccountPage() {
                                         outline: 'none',
                                         marginTop: '.5rem',
                                         marginRight: '.5rem'
-                                    }} />
+                                    }} type='password' value={reNewPass}
+                                        onChange={(e) => setReNewPass(e.target.value)} />
                                 </div>
                                 <button style={{
                                     marginTop: '1rem',
@@ -409,99 +526,141 @@ function AccountPage() {
                                     color: 'white',
                                     padding: '10px',
                                     borderRadius: '.5rem'
-                                }}>Lưu Thay Đổi</button>
+                                }} onClick={() => HandleChangePass()}>Lưu Thay Đổi</button>
                             </div>}
 
                             {checkOption === 4 && <div style={{
                                 width: '70%',
                                 padding: '1rem .5rem',
-                                height: '70%'
+                                height: '70%',
+                                display: 'flex',
+                                justifyContent: 'space-between'
                             }}>
-                                <p style={{ fontWeight: 'bold' }}>Chọn Tỉnh/Thành Phố</p>
-                                <select style={{
-                                    appearance: 'none',
-                                    webkitAppearance: 'none',
-                                    mozAppearance: 'none',
-                                    width: '50%',
-                                    padding: '5px 10px',
-                                    border: '1px solid grey',
-                                    borderRadius: '4px',
-                                    backgroundColor: '#fff',
-                                    outline: 'none',
-                                    marginTop: '.5rem',
-                                    marginRight: '.5rem'
-                                }} value={selectedCity} onChange={handleCityChange}>
-                                    <option value="">Chọn Tỉnh/Thành Phố</option>
-                                    {city.length > 0 &&
-                                        city.map(c => (
-                                            <option value={c.matp}>{c.name}</option>
-                                        ))
-                                    }
-                                </select>
+                                <div style={{
+                                    width: '50%'
+                                }}>
+                                    {listAdd.map((ad, index) => (
+                                        <div key={index} style={{
+                                            margin: '.5rem 0'
+                                        }}>
+                                            {ad.detail}
+                                            <button onClick={() => handleEditAdd(ad)}
+                                                style={{
+                                                    border: 'none',
+                                                    backgroundColor: '#1a71ff',
+                                                    color: 'white',
+                                                    padding: '.5rem 2rem',
+                                                    borderRadius: '.5rem',
+                                                    marginLeft: '.5rem'
+                                                }}>Sửa</button>
+                                        </div>
+                                    ))}
 
-                                <p style={{ fontWeight: 'bold' }}>Chọn Quận/Huyện</p>
-                                <select style={{
-                                    appearance: 'none',
-                                    webkitAppearance: 'none',
-                                    mozAppearance: 'none',
-                                    width: '50%',
-                                    padding: '5px 10px',
-                                    border: '1px solid grey',
-                                    borderRadius: '4px',
-                                    backgroundColor: '#fff',
-                                    outline: 'none',
-                                    marginTop: '.5rem',
-                                    marginRight: '.5rem'
-                                }} value={selectedDistrict} onChange={handleDistrictChange}>
-                                    <option value="">Chọn Quận/Huyện</option>
-                                    {district.length > 0 &&
-                                        district.map(c => (
-                                            <option value={c.maqh}>{c.name}</option>
-                                        ))
-                                    }
-                                </select>
-
-                                <p style={{ fontWeight: 'bold' }}>Chọn Xã/Phường</p>
-                                <select style={{
-                                    appearance: 'none',
-                                    webkitAppearance: 'none',
-                                    mozAppearance: 'none',
-                                    width: '50%',
-                                    padding: '5px 10px',
-                                    border: '1px solid grey',
-                                    borderRadius: '4px',
-                                    backgroundColor: '#fff',
-                                    outline: 'none',
-                                    marginTop: '.5rem',
-                                    marginRight: '.5rem'
-                                }} value={selectedWard} onChange={handleWardChange}>
-                                    <option value="">Chọn Xã/Phường</option>
-                                    {ward.length > 0 &&
-                                        ward.map(c => (
-                                            <option value={c.xaid}>{c.name}</option>
-                                        ))
-                                    }
-                                </select>
-                                <div>
-                                    <p style={{ fontWeight: 'bold' }}>Địa chỉ chi tiết</p>
-                                    <input placeholder='Nhập địa chỉ chi tiết' style={{
+                                    <button onClick={() => AddNewAd()} style={{
+                                        border: 'none',
+                                        backgroundColor: '#fb6445',
+                                        color: 'white',
+                                        padding: '.5rem 3rem',
+                                        borderRadius: '.5rem'
+                                    }}>Thêm</button>
+                                </div>
+                                <div style={{
+                                    width: '50%'
+                                }}>
+                                    <p style={{ fontWeight: 'bold' }}>Chọn Tỉnh/Thành Phố</p>
+                                    <select style={{
+                                        appearance: 'none',
+                                        webkitAppearance: 'none',
+                                        mozAppearance: 'none',
                                         width: '50%',
                                         padding: '5px 10px',
-                                        borderRadius: '.5rem',
+                                        border: '1px solid grey',
+                                        borderRadius: '4px',
+                                        backgroundColor: '#fff',
                                         outline: 'none',
                                         marginTop: '.5rem',
                                         marginRight: '.5rem'
-                                    }} value={cityInput}
-                                        onChange={handleCityInputChange} />
+                                    }} value={selectedCity} onChange={handleCityChange}>
+                                        <option value="">Chọn Tỉnh/Thành Phố</option>
+                                        {city.length > 0 &&
+                                            city.map(c => (
+                                                <option value={c.matp}>{c.name}</option>
+                                            ))
+                                        }
+                                    </select>
+
+                                    <p style={{ fontWeight: 'bold' }}>Chọn Quận/Huyện</p>
+                                    <select style={{
+                                        appearance: 'none',
+                                        webkitAppearance: 'none',
+                                        mozAppearance: 'none',
+                                        width: '50%',
+                                        padding: '5px 10px',
+                                        border: '1px solid grey',
+                                        borderRadius: '4px',
+                                        backgroundColor: '#fff',
+                                        outline: 'none',
+                                        marginTop: '.5rem',
+                                        marginRight: '.5rem'
+                                    }} value={selectedDistrict} onChange={handleDistrictChange}>
+                                        <option value="">Chọn Quận/Huyện</option>
+                                        {district.length > 0 &&
+                                            district.map(c => (
+                                                <option value={c.maqh}>{c.name}</option>
+                                            ))
+                                        }
+                                    </select>
+
+                                    <p style={{ fontWeight: 'bold' }}>Chọn Xã/Phường</p>
+                                    <select style={{
+                                        appearance: 'none',
+                                        webkitAppearance: 'none',
+                                        mozAppearance: 'none',
+                                        width: '50%',
+                                        padding: '5px 10px',
+                                        border: '1px solid grey',
+                                        borderRadius: '4px',
+                                        backgroundColor: '#fff',
+                                        outline: 'none',
+                                        marginTop: '.5rem',
+                                        marginRight: '.5rem'
+                                    }} value={selectedWard} onChange={handleWardChange}>
+                                        <option value="">Chọn Xã/Phường</option>
+                                        {ward.length > 0 &&
+                                            ward.map(c => (
+                                                <option value={c.xaid}>{c.name}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    <div>
+                                        <p style={{ fontWeight: 'bold' }}>Địa chỉ chi tiết</p>
+                                        <input placeholder='Nhập địa chỉ chi tiết' style={{
+                                            width: '50%',
+                                            padding: '5px 10px',
+                                            borderRadius: '.5rem',
+                                            outline: 'none',
+                                            marginTop: '.5rem',
+                                            marginRight: '.5rem'
+                                        }} value={cityInput}
+                                            onChange={handleCityInputChange} />
+                                    </div>
+                                    {!showActiveBtn && <button style={{
+                                        marginTop: '1rem',
+                                        border: 'none',
+                                        backgroundColor: '#fb6445',
+                                        color: 'white',
+                                        padding: '10px',
+                                        borderRadius: '.5rem'
+                                    }} onClick={() => UpdateAddress()}>Lưu Thay Đổi</button>}
+                                    {showActiveBtn && <button style={{
+                                        marginTop: '1rem',
+                                        border: 'none',
+                                        backgroundColor: '#fb6445',
+                                        color: 'white',
+                                        padding: '10px',
+                                        borderRadius: '.5rem'
+                                    }} onClick={() => AddAddress()}>Thêm Mới</button>}
                                 </div>
-                                <button style={{
-                                    marginTop: '1rem',
-                                    border: 'none',
-                                    backgroundColor: '#fb6445',
-                                    color: 'white',
-                                    padding: '10px',
-                                    borderRadius: '.5rem'
-                                }} onClick={() => AddAddress()}>Lưu Thay Đổi</button>
                             </div>}
                         </div>
                         <div style={{ width: '100%', marginTop: '1rem' }}>
