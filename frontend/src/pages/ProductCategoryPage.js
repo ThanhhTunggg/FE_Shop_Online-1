@@ -108,7 +108,7 @@ function ProductCategoryPage({ match }) {
                 break;
         }
         setProducts(sortedProducts);
-    };
+    }; 
 
     const handleSortChange = (e) => {
         setSortOption(e.target.value);
