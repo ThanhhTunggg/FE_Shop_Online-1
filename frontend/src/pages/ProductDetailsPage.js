@@ -298,7 +298,7 @@ function ProductDetailsPage({ history, match }) {
                                     >{pricePro} vnd</p>
                                 </span>
 
-                                <div style={{ display: 'flex' }}>
+                                <div style={{ display: 'flex', margin: '1rem 1rem' }}>
                                     {productDetail.length > 0 && productDetail.map(x => (
                                         productCheck === x.productDetailId ? (<div style={{ backgroundColor: '#1a71ff', color: 'white', borderRadius: '.5rem', cursor: 'pointer', border: '1px solid grey', marginRight: '.5rem', textAlign: 'center', padding: '.2rem 1rem' }}
                                             onClick={() => handlePriceSet(x.productDetailPrice, x.productDetailId)}>

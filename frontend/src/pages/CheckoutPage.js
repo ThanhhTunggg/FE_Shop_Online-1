@@ -64,7 +64,7 @@ const CheckoutPage = ({ match }) => {
         if (location.state && location.state.productArray) {
             setProductLst(location.state.productArray);
             console.log(location.state.productArray[0]);
-            
+
             const total = location.state.productArray.reduce((sum, product) => sum + (product.productSalePrice
                 ? product.productSalePrice * product.amount
                 : product.productPrice * product.amount), 0);
@@ -149,7 +149,7 @@ const CheckoutPage = ({ match }) => {
             })
     }
 
-    const handleAdd = (item) => {   
+    const handleAdd = (item) => {
         setSelectedAddressId(item.addressID)
         setSelectedAddress(item.detail)
         setShowChoose(false)
@@ -170,14 +170,38 @@ const CheckoutPage = ({ match }) => {
                 <div style={{
                     backgroundColor: 'white',
                     width: '50%',
-                    height: '20vh'
+                    minHeight: '20vh',
+                    borderRadius: '.5rem',
+                    padding: '1rem'
                 }}>
                     {listAdd.map((ad, index) => (
-                        <div key={index}>
-                            {ad.detail}
-                            <button onClick={() => handleAdd(ad)}>Chọn</button>
+                        <div key={index} style={{
+                            padding: '1rem',
+                            borderRadius: '.5rem',
+                            display: 'flex'
+                        }}>
+                            <div style={{
+                                width: '80%'
+                            }}>{ad.detail}</div>
+                            <button style={{
+                                width: '20%',
+                                border: '1px solid #1a71ff',
+                                padding: '.5rem 3rem',
+                                borderRadius: '.5rem',
+                                backgroundColor: 'white',
+                            }} onClick={() => handleAdd(ad)}>Chọn</button>
                         </div>
                     ))}
+                    <button style={{
+                        width: '20%',
+                        border: 'none',
+                        padding: '.5rem 3rem',
+                        borderRadius: '.5rem',
+                        backgroundColor: '#e6314b',
+                        color: 'white'
+                    }} onClick={() => setShowChoose(false)}>
+                        Đóng
+                    </button>
                 </div>
             </div>}
             {cardCreationError ? <Message variant='danger'>{cardCreationError}</Message> : ""}
@@ -199,12 +223,12 @@ const CheckoutPage = ({ match }) => {
             {error ? <Message variant='danger'>{error}</Message> :
                 <Container>
                     <Row>
-                        <Col xs={6}>
-                            <h3>Thanh toán</h3>
+                        <Col xs={12}>
+                            <h3 style={{
+                                marginTop: '2rem'
+                            }}>Thanh toán</h3>
                             <div style={{
-                                border: '1px solid lightgrey',
-                                borderRadius: '.3rem',
-                                backgroundColor: 'white'
+                                borderRadius: '.5rem',
                             }}>
                                 {productLst && productLst.length > 0
                                     ? productLst.map(product => (
@@ -212,6 +236,9 @@ const CheckoutPage = ({ match }) => {
                                             <Card.Body>
                                                 <Container>
                                                     <Row>
+                                                        <Col>
+                                                            <img src={product.imgUrl} width={'50px'} />
+                                                        </Col>
                                                         <Col>
                                                             <h5 className="card-title text-capitalize">
                                                                 {product.productName}
@@ -258,12 +285,19 @@ const CheckoutPage = ({ match }) => {
                             <div style={{ marginTop: '1rem' }}>
                                 <h3>Địa chỉ nhận hàng</h3>
                                 <p>{selectedAddress}</p>
-                                <button onClick={() => ChangeAddressLocate()}>Thay đổi</button>
+                                <button style={{
+                                    border: '1px solid #1a71ff',
+                                    padding: '.5rem 3rem',
+                                    borderRadius: '.5rem',
+                                    backgroundColor: 'white',
+                                }} onClick={() => ChangeAddressLocate()}>Thay đổi</button>
                             </div>
                             <UserAddressComponent handleAddressId={handleAddressId} />
                         </Col>
                         <Col xs={6}>
-                            <h3>
+                            <h3 style={{
+                                marginTop: '2rem'
+                            }}>
                                 Phương thức thanh toán
                             </h3>
                             <p style={{
@@ -271,7 +305,8 @@ const CheckoutPage = ({ match }) => {
                                 padding: '1rem .5rem',
                                 borderRadius: '.2rem',
                                 border: '1px solid lightgrey',
-                                fontWeight: 'bold'
+                                fontWeight: 'bold',
+                                marginBottom: '1rem'
                             }}>Thanh toán khi nhận hàng</p>
 
                             <p style={{

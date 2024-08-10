@@ -23,9 +23,17 @@ function ProductsListPage() {
     const productsListReducer = useSelector(state => state.productsListReducer)
     const { loading, error, products } = productsListReducer
     const [categoryList, setcategoryList] = useState([])
+    const [visibleCount, setVisibleCount] = useState(10);
+
+    const displayedProducts = products.slice(0, visibleCount);
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
     const { userInfo } = userLoginReducer
+
+    const loadMore = () => {
+        // Tăng số lượng sản phẩm hiển thị lên 10
+        setVisibleCount(prevCount => prevCount + 10);
+    };
 
     const images = [
         `${process.env.PUBLIC_URL}/anhsl1.jpg`,
@@ -35,6 +43,8 @@ function ProductsListPage() {
         `${process.env.PUBLIC_URL}/anhsl7.jpg`,
         `${process.env.PUBLIC_URL}/anhsl8.jpg`,
     ];
+
+    let footer = `${process.env.PUBLIC_URL}/footer.png`
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -53,7 +63,6 @@ function ProductsListPage() {
             type: CREATE_PRODUCT_RESET
         })
         LoadCategory()
-        //dispatch(checkTokenValidation())
     }, [dispatch])
 
     const LoadCategory = async () => {
@@ -228,8 +237,10 @@ function ProductsListPage() {
                                             backgroundColor: 'white',
                                             overflow: 'hidden'
                                         }}>
-                                            <img width={'60%'} src={x.imageUrl !== null ? x.imageUrl : `${process.env.PUBLIC_URL}/bong.png`} />
-                                            <p>{x.categoryName}</p>
+                                            <Link to={`categoryProduct/${x.categoryId}`}>
+                                                <img width={'60%'} src={x.imageUrl !== null ? x.imageUrl : `${process.env.PUBLIC_URL}/bong.png`} />
+                                                <p>{x.categoryName}</p>
+                                            </Link>
                                         </div>
                                     ))}
 
@@ -254,19 +265,30 @@ function ProductsListPage() {
                         flexWrap: 'wrap',
                         margin: '0 15%'
                     }}>
-                        {(products.filter((item) =>
-                            item.productName.toLowerCase().includes(searchTerm !== "" ? searchTerm.split("=")[1] : "")
-                        )).length === 0 ? showNothingMessage() : (products.filter((item) =>
-                            item.productName.toLowerCase().includes(searchTerm !== "" ? searchTerm.split("=")[1] : "")
-                        )).map((product, idx) => (
-                            <div style={{
+                        {products.length === 0 ? showNothingMessage() : displayedProducts.map((product, idx) => (
+                            <div key={idx} style={{
                                 width: 'calc(100%/7)',
                                 margin: '0 .5rem',
                             }}>
                                 <Product product={product} />
                             </div>
-                        )
-                        )}
+                        ))}
+                    </div>
+                    {visibleCount < products.length && (
+                        <div style={{
+                            width: '100%', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem'
+                        }}>
+                            <button style={{
+                                border: '1px solid #1a71ff',
+                                borderRadius: '.5rem',
+                                padding: '.5rem 4rem',
+                                color: '#1a71ff'
+                            }} onClick={loadMore}>Load More</button>
+                        </div>
+                    )}
+
+                    <div>
+                        <img src={footer}  width={'100%'} />
                     </div>
                 </div>}
         </div>
