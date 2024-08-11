@@ -4,26 +4,33 @@ import { Link } from 'react-router-dom'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 
-function Product({ product }) {
+function ProductSale({ product }) {
     const [imageProduct, setImageProduct] = useState("https://product.hstatic.net/1000362139/product/blog_large_75e6f17c0d894a3191a1bc05ca645705.jpg")
     // login reducer
     const userLoginReducer = useSelector(state => state.userLoginReducer)
     const { userInfo } = userLoginReducer
 
-
     return (
-        <div>
+        <div style={{ position: 'relative' }}>
+            <div style={{
+                position: 'absolute',
+                top: '-30px', // Khoảng cách từ trên xuống
+                right: '0px', // Khoảng cách từ phải sang
+                zIndex: 5 // Đảm bảo logo nằm trên cùng
+            }}>
+                <img src={`${process.env.PUBLIC_URL}/sale.png`} width={'80px'} />
+            </div>
             <div className="mb-3 rounded detailPro"
                 style={{
                     backgroundColor: 'white',
                     width: '100%',
                     border: '2px solid lightgrey',
                     borderRadius: '2rem',
-                    padding: '.2rem .2rem .5rem .2rem'
+                    padding: '.2rem .2rem .5rem .2rem',
+                    position: 'relative' // Để div chứa nội dung có thể chứa logo Sale
                 }}
             >
                 <div style={{
-
                 }}>
                     <Link to={`/product/${product.productId}`} >
                         <Card.Img variant="top" src={product.img1 ? product.img1 : imageProduct} height="170" />
@@ -51,9 +58,14 @@ function Product({ product }) {
                                 padding: '.3rem .2rem'
                             }}>Chỉnh sửa</p>
                             :
-                            <p style={{ margin: 0, color: 'red' }}>
-                                {product.productPrice} vnd
-                            </p>
+                            <>
+                                <p style={{ margin: 0, color: 'red' }}>
+                                    <del>{product.productPrice} vnd</del>
+                                </p>
+                                <p style={{ margin: 0, color: 'red' }}>
+                                    {product.productSalePrice} vnd
+                                </p>
+                            </>
                         }
                     </Link>
                 </div>
@@ -62,4 +74,4 @@ function Product({ product }) {
     )
 }
 
-export default Product
+export default ProductSale

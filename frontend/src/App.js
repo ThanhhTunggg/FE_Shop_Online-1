@@ -24,6 +24,7 @@ import Success from './pages/Success'
 import EditProductPage from './pages/EditProductPage'
 import ManageMoneyPage from './pages/ManageMoneyPage'
 import ProductCategoryPage from './pages/ProductCategoryPage'
+import SaleProductPage from './pages/SaleProductPage'
 
 
 const App = () => {
@@ -61,6 +62,7 @@ const App = () => {
             <Route path="/edit-product/:id/" component={EditProductPage} exact />
             <Route path="/manage/" component={ManageMoneyPage} exact />
             <Route path="/categoryProduct/:id/" component={ProductCategoryPage} exact />
+            <Route path="/sale/" component={SaleProductPage} exact />
             <Route path="" component={NotFound} exact />
           </Switch>
         </div>

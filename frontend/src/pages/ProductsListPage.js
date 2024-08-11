@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom/cjs/react-router-dom.min'
 import { calc } from 'antd/es/theme/internal'
 import axios from 'axios'
 import apiRoot from '../Config/ConfigApi'
+import ProductSale from '../components/ProductSale'
 
 
 function ProductsListPage() {
@@ -24,6 +25,7 @@ function ProductsListPage() {
     const { loading, error, products } = productsListReducer
     const [categoryList, setcategoryList] = useState([])
     const [visibleCount, setVisibleCount] = useState(10);
+    const [productsSale, setProductsSale] = useState([]);
 
     const displayedProducts = products.slice(0, visibleCount);
     // login reducer
@@ -63,6 +65,7 @@ function ProductsListPage() {
             type: CREATE_PRODUCT_RESET
         })
         LoadCategory()
+        LoadProductSale()
     }, [dispatch])
 
     const LoadCategory = async () => {
@@ -74,6 +77,17 @@ function ProductsListPage() {
             setcategoryList(data)
         } catch {
             setcategoryList([])
+        }
+    }
+
+    const LoadProductSale = async () => {
+        try {
+            const { data } = await axios.get(
+                `${apiRoot}Product/GetProductsSale`
+            )
+            setProductsSale(data)
+        } catch {
+            setProductsSale([])
         }
     }
 
@@ -161,6 +175,17 @@ function ProductsListPage() {
                                             marginRight: '1rem'
                                         }}>Thêm sản phẩm mới</p>
                                     </Link>
+                                    <Link to="/sale/">
+                                        <p style={{
+                                            backgroundColor: '#e8696b',
+                                            color: 'white',
+                                            padding: '2rem 2rem',
+                                            width: 'fit-content',
+                                            borderRadius: '.5rem',
+                                            fontSize: '22px',
+                                            marginRight: '1rem'
+                                        }}>Sản phẩm giảm giá</p>
+                                    </Link>
                                     <Link to="/category/">
                                         <p style={{
                                             backgroundColor: '#e28743',
@@ -246,6 +271,36 @@ function ProductsListPage() {
 
                                 </div>
                             </div>
+                            <img src={`${process.env.PUBLIC_URL}/slideSale.png`} width={'100%'} style={{
+                                marginBottom: '1rem'
+                            }}/>
+                            {productsSale.length > 0 &&
+                                <>
+                                    <h5 style={{
+                                        backgroundColor: 'white',
+                                        marginBottom: '1rem',
+                                        padding: '.8rem .5rem',
+                                        borderBottom: '5px solid orange',
+                                        borderRadius: '2px',
+                                        textAlign: 'center',
+                                        color: '#fb6445',
+                                        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 2px 8px'
+                                    }}>DEAL CHỚP NHOÁNG</h5>
+                                    <div style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexWrap: 'wrap',
+                                    }}>
+                                        {productsSale.map((product, idx) => (
+                                            <div key={idx} style={{
+                                                width: 'calc(100%/7)',
+                                                margin: '0 .5rem',
+                                            }}>
+                                                <ProductSale product={product} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>}
                             <h5 style={{
                                 backgroundColor: 'white',
                                 marginBottom: '1rem',
@@ -288,7 +343,7 @@ function ProductsListPage() {
                     )}
 
                     <div>
-                        <img src={footer}  width={'100%'} />
+                        <img src={footer} width={'100%'} />
                     </div>
                 </div>}
         </div>

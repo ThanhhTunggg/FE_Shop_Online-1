@@ -28,7 +28,8 @@ function ProductDetailsPage({ history, match }) {
     const [pricePro, setIPricePro] = useState('')
     const [stockPro, setStockPro] = useState('')
     const [productCheck, setProductCheck] = useState('')
-    const [productArray , setProductArray] = useState([])
+    const [productOriginPrice, setProductOriginPrice] = useState('')
+    const [productArray, setProductArray] = useState([])
 
     // modal state and functions
     const [show, setShow] = useState(false);
@@ -47,7 +48,9 @@ function ProductDetailsPage({ history, match }) {
         if (product.product !== undefined) {
             setProduct1(product.product)
             setProductDetail(product.productDetails)
-            setIPricePro(product.productDetails[0].productDetailPrice)
+            setIPricePro(product.product.sale === 1 ? (product.productDetails[0].productDetailPrice - (product.productDetails[0].productDetailPrice / 100 * product.product.salePercent))
+                : product.productDetails[0].productDetailPrice)
+            setProductOriginPrice(product.productDetails[0].productDetailPrice)
             setStockPro(product.productDetails[0].detailStock)
             setImgLink(product.product.img1)
             setProductCheck(product.productDetails[0].productDetailId)
@@ -58,10 +61,13 @@ function ProductDetailsPage({ history, match }) {
         if (product1 != null && productDetail.length > 0) {
             productObArray.imgUrl = product1.img1
             productObArray.productDetailName = productDetail[0].productDetailName
-            productObArray.productDetailPrice = productDetail[0].productDetailPrice
-            productObArray.productPrice = productDetail[0].productDetailPrice * amount
+            productObArray.productDetailPrice = product1.sale === 1 ? (productDetail[0].productDetailPrice - (productDetail[0].productDetailPrice / 100 * product1.salePercent))
+                : productDetail[0].productDetailPrice
+            productObArray.productPrice = (product1.sale === 1 ? (productDetail[0].productDetailPrice - (productDetail[0].productDetailPrice / 100 * product1.salePercent))
+                : productDetail[0].productDetailPrice) * amount
         }
     }, [productDetail, product1])
+
 
 
     useEffect(() => {
@@ -133,7 +139,7 @@ function ProductDetailsPage({ history, match }) {
             console.error("Error fetching cart data:", error);
         }
     }
-    
+
     const AddCart1 = async (id) => {
         try {
             const config = {
@@ -179,7 +185,9 @@ function ProductDetailsPage({ history, match }) {
     }
 
     const handlePriceSet = (price, idDetail) => {
-        setIPricePro(price)
+        var data = product1.sale === 1 ? (price - (price / 100 * product1.salePercent))
+        : price
+        setIPricePro(data)
         productDetail.forEach(e => {
             if (e.productDetailId === idDetail) {
                 setProductCheck(idDetail)
@@ -277,11 +285,28 @@ function ProductDetailsPage({ history, match }) {
                             <Col sm>
                                 <b>{product1.productName}</b>
                                 <hr />
+                                {product1.sale === 1 && <span style={{
+                                    display: "flex",
+                                    justifyContent: "left",
+                                    padding: "2px",
+                                }}>
+                                    <p className="ml-2"
+                                        style={{
+                                            fontSize: '16px',
+                                            color: 'black',
+                                            width: '100%',
+                                            backgroundColor: '#fafafa',
+                                            height: 'fit-content',
+                                            padding: '.3rem 1rem',
+                                            borderRadius: '.2rem',
+                                        }}
+                                    ><del>{productOriginPrice} vnd</del></p>
+                                </span>}
                                 <span style={{
                                     display: "flex",
                                     justifyContent: "left",
                                     padding: "2px",
-                                    height: '50%',
+                                    height: '40%',
                                     marginBottom: '2rem'
                                 }}>
                                     <p className="ml-2"
@@ -394,7 +419,7 @@ function ProductDetailsPage({ history, match }) {
                                                 }}>
                                                     <Link to={{
                                                         pathname: `${product1.productId}/checkout`,
-                                                        state: {productArray}
+                                                        state: { productArray }
                                                     }}
                                                         style={{
                                                             width: '40%'
@@ -448,7 +473,7 @@ function ProductDetailsPage({ history, match }) {
                                                     display: 'flex',
                                                     justifyContent: 'space-between'
                                                 }}>
-                                                    <div 
+                                                    <div
                                                         style={{
                                                             width: '40%'
                                                         }}>

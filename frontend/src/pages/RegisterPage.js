@@ -16,6 +16,13 @@ function RegisterPage({ history, variant }) {
     const [message, setMessage] = useState("")
 
     const dispatch = useDispatch()
+    const [inputValue, setInputValue] = useState('');
+
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
+    const [show, setShow] = useState(false)
+    const [userAdd, setUserAdd] = useState('')
 
     // reducer
     const userRegisterReducer = useSelector(state => state.userRegisterReducer)
@@ -49,13 +56,72 @@ function RegisterPage({ history, variant }) {
 
             axios.post(`${apiRoot}User/AddUsers`, form_data,
                 config).then(res => {
-                    history.push('/login')
+                    setShow(true)
+                    setUserAdd(res.data)
+                }).catch(err => {
+                    alert("Email hoặc số điện thoại được đăng ký với tài khoản khác!")
                 })
         }
     }
 
+    const HandleAddSale = () => {
+        axios.post(`${apiRoot}User/ValidateUser/${userAdd}/${inputValue}`)
+            .then(res => {
+                history.push('/login')
+            }).catch(err => {
+                alert("Xác minh tài khoản thất bại")
+            })
+    }
+
     return (
         <div>
+            {show && <div style={{
+                position: 'fixed', zIndex: '80',
+                backgroundColor: 'rgb(31, 31, 31, .5)',
+                bottom: '0',
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <div style={{
+                    backgroundColor: 'white',
+                    width: '50%',
+                    minHeight: '20vh',
+                    borderRadius: '.5rem',
+                    padding: '1rem'
+                }}>
+                    <h5 style={{ textAlign: 'center', marginBottom: '1rem' }}>Xác minh tài khoản</h5>
+                    <div style={{
+                        marginBottom: '1rem'
+                    }}>
+                        <p>Mã xác nhận được gửi qua Email của bạn. Vui lòng kiểm tra Email</p>
+                        <input style={{
+                            width: '60%',
+                            borderRadius: '.5rem',
+                            padding: '.2rem 1rem'
+                        }} type='number' placeholder='Nhập mã xác nhận' value={inputValue}
+                            onChange={handleInputChange} />
+                    </div>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between'
+                    }}>
+                        <button style={{
+                            width: '20%',
+                            border: 'none',
+                            padding: '.5rem 3rem',
+                            borderRadius: '.5rem',
+                            backgroundColor: '#43e2df',
+                            marginLeft: '1rem',
+                            color: 'white'
+                        }} onClick={() => HandleAddSale()}>
+                            Xác minh
+                        </button>
+                    </div>
+                </div>
+            </div>}
             <Row className='justify-content-md-center' style={{
                 backgroundColor: 'white',
                 borderRadius: '2rem',

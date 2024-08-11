@@ -172,125 +172,131 @@ function CategoryPage() {
                 </span>
             </span>}
             {!loading && (
-                <div style={{
-                    height: '70vh',
-                    margin: '6rem 2rem',
-                    backgroundColor: 'white',
-                    padding: '.4rem',
-                    borderRadius: '.8rem',
-                    boxShadow: 'rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px',
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
+                <>
+                    <h4 style={{
+                        textAlign: 'center',
+                        marginTop: '6rem'
+                    }}>Quản lý Danh mục sản phẩm</h4>
                     <div style={{
-                        width: '50%',
-                        height: '100%',
-                        overflowY: 'auto',
-
-                    }}>
-                        {categoryList.map(cate => (
-                            <div className='cateAdmin' style={{
-                                border: '1px solid grey',
-                                width: '100%',
-                                borderRadius: '.5rem',
-                                padding: '.2rem .4rem',
-                                marginBottom: '.3rem',
-                                display: 'flex',
-                                justifyContent: 'space-between'
-                            }} onClick={() => HandleUpdateCategory(cate.categoryName, cate.imageUrl)}>
-                                <p>{cate.categoryName}</p>
-                                <button style={{
-                                    border: 'none',
-                                    backgroundColor: 'red',
-                                    color: 'white',
-                                    borderRadius: '.5rem'
-                                }}>Sửa</button>
-                            </div>
-                        ))}
-                    </div>
-                    <div style={{
-                        width: '50%',
-                        padding: '.5rem 1rem',
-                        backgroundColor: '#cee0ff',
-                        borderRadius: '.5rem',
-                        margin: '.5rem'
+                        height: '80vh',
+                        margin: '1rem 2rem 2rem 2rem',
+                        backgroundColor: 'white',
+                        padding: '.4rem',
+                        borderRadius: '.8rem',
+                        boxShadow: 'rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px',
+                        display: 'flex',
+                        justifyContent: 'space-between'
                     }}>
                         <div style={{
-                            display: 'flex',
-                            justifyContent: 'space-evenly',
-                            marginBottom: '.8rem'
+                            width: '50%',
+                            height: '100%',
+                            overflowY: 'auto',
+
                         }}>
-                            <button style={{
-                                border: 'none',
-                                padding: '.5rem 2rem',
-                                borderRadius: '.5rem',
-                                backgroundColor: '#fb6445',
-                                color: 'white'
-                            }} onClick={() => HandleAddNew()}>Thêm mới</button>
+                            {categoryList.map(cate => (
+                                <div className='cateAdmin' style={{
+                                    border: '1px solid grey',
+                                    width: '100%',
+                                    borderRadius: '.5rem',
+                                    padding: '.2rem .4rem',
+                                    marginBottom: '.3rem',
+                                    display: 'flex',
+                                    justifyContent: 'space-between'
+                                }} onClick={() => HandleUpdateCategory(cate.categoryName, cate.imageUrl)}>
+                                    <p>{cate.categoryName}</p>
+                                    <button style={{
+                                        border: 'none',
+                                        backgroundColor: 'red',
+                                        color: 'white',
+                                        borderRadius: '.5rem'
+                                    }}>Sửa</button>
+                                </div>
+                            ))}
                         </div>
                         <div style={{
-                            alignItems: 'center',
-                            alignContent: 'center',
-                            backgroundColor: 'white',
-                            padding: '1rem',
-                            borderRadius: '.5rem'
+                            width: '50%',
+                            padding: '.5rem 1rem',
+                            backgroundColor: '#cee0ff',
+                            borderRadius: '.5rem',
+                            margin: '.5rem'
                         }}>
-                            <div style={{
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'center'
-                            }}>
-                                <Form.Group controlId="imageUpload">
-                                    <div className="file-upload-container">
-                                        <Form.Control
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleFileChange5}
-                                            disabled={images.length >= 1}
-                                        />
-                                        {url5 ? (
-                                            <img src={url5} alt="Uploaded" width={'100px'} className="uploaded-image" />
-                                        ) : (
-                                            <div className="file-upload-text">
-                                                {image ? 'Tải ảnh' : 'Tải ảnh'}
-                                            </div>
-                                        )}
-                                    </div>
-                                </Form.Group>
-                            </div>
-                            <div style={{
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'left',
-                                marginBottom: '3rem',
-                                marginLeft: '3rem'
-                            }}>
-                                <b style={{
-                                    marginRight: '2rem'
-                                }}>Nhập tên danh mục</b>
-                                <input type='text' placeholder='Nhập tên danh mục' style={{
-                                    width: '50%',
-                                    borderRadius: '.5rem',
-                                    border: '1px solid grey',
-                                    padding: '.3rem 1rem'
-                                }} value={inputValue} onChange={handleChange} />
-                            </div>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'space-evenly',
-                                width: '100%',
+                                marginBottom: '.8rem'
                             }}>
                                 <button style={{
                                     border: 'none',
-                                    padding: '.5rem 5rem',
+                                    padding: '.5rem 2rem',
                                     borderRadius: '.5rem',
                                     backgroundColor: '#fb6445',
                                     color: 'white'
-                                }} onClick={() => HandleAddCategory()}>Lưu</button>
+                                }} onClick={() => HandleAddNew()}>Thêm mới</button>
+                            </div>
+                            <div style={{
+                                alignItems: 'center',
+                                alignContent: 'center',
+                                backgroundColor: 'white',
+                                padding: '1rem',
+                                borderRadius: '.5rem'
+                            }}>
+                                <div style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Form.Group controlId="imageUpload">
+                                        <div className="file-upload-container">
+                                            <Form.Control
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleFileChange5}
+                                                disabled={images.length >= 1}
+                                            />
+                                            {url5 ? (
+                                                <img src={url5} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                                            ) : (
+                                                <div className="file-upload-text">
+                                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Form.Group>
+                                </div>
+                                <div style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'left',
+                                    marginBottom: '3rem',
+                                    marginLeft: '3rem'
+                                }}>
+                                    <b style={{
+                                        marginRight: '2rem'
+                                    }}>Nhập tên danh mục</b>
+                                    <input type='text' placeholder='Nhập tên danh mục' style={{
+                                        width: '50%',
+                                        borderRadius: '.5rem',
+                                        border: '1px solid grey',
+                                        padding: '.3rem 1rem'
+                                    }} value={inputValue} onChange={handleChange} />
+                                </div>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-evenly',
+                                    width: '100%',
+                                }}>
+                                    <button style={{
+                                        border: 'none',
+                                        padding: '.5rem 5rem',
+                                        borderRadius: '.5rem',
+                                        backgroundColor: '#fb6445',
+                                        color: 'white'
+                                    }} onClick={() => HandleAddCategory()}>Lưu</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </>
             )}
         </div>
     )

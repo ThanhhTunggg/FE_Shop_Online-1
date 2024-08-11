@@ -82,10 +82,8 @@ const ProductCreatePage = () => {
                 const newItem = {
                     'productDetailName': detailName,
                     'productDetailPrice': detailPrice,
-                    'detailPriceDiscount': detailPriceDiscount,
+                    'detailPriceDiscount': 0,
                     'detailStock': stock,
-                    'startDate': startDate,
-                    'endDate': endDate
                 };
                 setItems([...items, newItem]);
                 setDetailName('');
@@ -111,31 +109,35 @@ const ProductCreatePage = () => {
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        const data1 = await postFile(file1);
-        const data2 = await postFile(file2);
-        const data3 = await postFile(file3);
-        const data4 = await postFile(file4);
-        const data5 = await postFile(file5);
-        let form_data = {
-            product: {
-                "productName": name,
-                "productDescription": description,
-                "productDate": "2024-06-23T08:39:10.722Z",
-                "updateAt": "2024-06-23T08:39:10.722Z",
-                "deleteAt": "2024-06-23T08:39:10.722Z",
-                "createAt": "2024-06-23T08:39:10.722Z",
-                "userId": userInfo.userId,
-                "categoryId": category,
-                "img1": data1,
-                "img2": data2,
-                "img3": data3,
-                "img4": data4,
-                "img5": data5
-            },
-            productDetails: items
+        if(items.length > 0){
+            const data1 = await postFile(file1);
+            const data2 = await postFile(file2);
+            const data3 = await postFile(file3);
+            const data4 = await postFile(file4);
+            const data5 = await postFile(file5);
+            let form_data = {
+                product: {
+                    "productName": name,
+                    "productDescription": description,
+                    "productDate": "2024-06-23T08:39:10.722Z",
+                    "updateAt": "2024-06-23T08:39:10.722Z",
+                    "deleteAt": "2024-06-23T08:39:10.722Z",
+                    "createAt": "2024-06-23T08:39:10.722Z",
+                    "userId": userInfo.userId,
+                    "categoryId": category,
+                    "img1": data1,
+                    "img2": data2,
+                    "img3": data3,
+                    "img4": data4,
+                    "img5": data5
+                },
+                productDetails: items
+            }
+            dispatch(createProduct(form_data))
+        }else{
+            alert('Vui lòng thêm 1 loại sản phẩm!')
         }
 
-        dispatch(createProduct(form_data))
     }
 
     const handleFileChange = (event) => {
@@ -336,10 +338,6 @@ const ProductCreatePage = () => {
                         <p style={{
                             width: '20%',
                             borderRight: '1px solid grey'
-                        }}>Số % giảm</p>
-                        <p style={{
-                            width: '20%',
-                            borderRight: '1px solid grey'
                         }}>Số lượng</p>
                         <p style={{
                             width: '20%',
@@ -361,10 +359,6 @@ const ProductCreatePage = () => {
                                 width: '20%',
                                 borderRight: '1px solid grey'
                             }}>{item.productDetailPrice}</p>
-                            <p style={{
-                                width: '20%',
-                                borderRight: '1px solid grey'
-                            }}>{item.detailPriceDiscount}</p>
                             <p style={{
                                 width: '20%',
                                 borderRight: '1px solid grey'
@@ -405,7 +399,6 @@ const ProductCreatePage = () => {
                             </b>
                         </Form.Label>
                         <Form.Control
-                            required
                             type="number"
                             value={detailPrice}
                             placeholder="Nhập giá VND"
@@ -415,7 +408,7 @@ const ProductCreatePage = () => {
                         </Form.Control>
                     </Form.Group>
 
-                    <div>
+                    {/* <div>
                         <Form.Group controlId='priceDiscount'>
                             <Form.Label>
                                 <b>
@@ -431,7 +424,7 @@ const ProductCreatePage = () => {
                             >
                             </Form.Control>
                         </Form.Group>
-                    </div>
+                    </div> */}
                     <Form.Group controlId='priceDiscount'>
                         <Form.Label>
                             <b>
@@ -439,7 +432,6 @@ const ProductCreatePage = () => {
                             </b>
                         </Form.Label>
                         <Form.Control
-                            required
                             type="number"
                             pattern="[0-9]+(\.[0-9]{1,2})?%?"
                             value={stock}

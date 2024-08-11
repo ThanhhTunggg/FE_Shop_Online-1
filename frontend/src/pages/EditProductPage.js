@@ -365,7 +365,7 @@ const EditProductPage = ({ match }) => {
             {/* {productCreationError && <Message variant='danger'>{productCreationError.image[0]}</Message>} */}
             <h3 style={{
                 textAlign: 'center'
-            }}>Thêm sản phẩm mới</h3>
+            }}>Chỉnh sửa sản phẩm</h3>
             <div>
 
                 <Form.Group controlId='name'>
@@ -404,11 +404,61 @@ const EditProductPage = ({ match }) => {
                     </Form.Control>
                 </Form.Group>
                 <div>
+                    <div style={{
+                        border: '1px solid grey',
+                        width: '50%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        borderRadius: '.5rem .5rem 0 0',
+                        padding: '.5rem',
+                        textAlign: 'center',
+                        backgroundColor: '#d0f1f6'
+                    }}>
+                        <p style={{
+                            width: '20%',
+                            borderRight: '1px solid grey'
+                        }}>Tên</p>
+                        <p style={{
+                            width: '20%',
+                            borderRight: '1px solid grey'
+                        }}>Giá</p>
+                        <p style={{
+                            width: '20%',
+                            borderRight: '1px solid grey'
+                        }}>Số lượng</p>
+                        <p style={{
+                            width: '20%',
+                        }}></p>
+                    </div>
                     {items.map((item, index) => (
-                        <li key={index}>
-                            {item.productDetailName} - {item.productDetailPrice} - {item.detailPriceDiscount} - {item.startDate} - {item.endDate}
-                            <button onClick={() => handleDelete(index, item)}>Xoá</button>
-                        </li>
+                        <div key={index} style={{
+                            border: '1px solid grey',
+                            width: '50%',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            padding: '.5rem'
+                        }}>
+                            <p style={{
+                                width: '20%',
+                                borderRight: '1px solid grey'
+                            }}>{item.productDetailName}</p>
+                            <p style={{
+                                width: '20%',
+                                borderRight: '1px solid grey'
+                            }}>{item.productDetailPrice}</p>
+                            <p style={{
+                                width: '20%',
+                                borderRight: '1px solid grey'
+                            }}>{item.detailStock}</p>
+                            <button style={{
+                                width: '19%',
+                                border: 'none',
+                                backgroundColor: '#e05966',
+                                color: 'white',
+                                borderRadius: '.5rem',
+                                margin: '0 .5%'
+                            }} onClick={() => handleDelete(index, item)}>Delete</button>
+                        </div>
                     ))}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '70%' }}>
@@ -445,23 +495,6 @@ const EditProductPage = ({ match }) => {
                         </Form.Control>
                     </Form.Group>
 
-                    <div>
-                        <Form.Group controlId='priceDiscount'>
-                            <Form.Label>
-                                <b>
-                                    Giảm giá (%)
-                                </b>
-                            </Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={detailPriceDiscount}
-                                placeholder="Nhập số phần trăm"
-                                className='inputAddNewProduct'
-                                onChange={(e) => setDetailPriceDiscount(e.target.value)}
-                            >
-                            </Form.Control>
-                        </Form.Group>
-                    </div>
                     <Form.Group controlId='priceDiscount'>
                         <Form.Label>
                             <b>
