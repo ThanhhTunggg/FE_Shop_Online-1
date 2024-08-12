@@ -199,7 +199,9 @@ function ProductDetailsPage({ history, match }) {
         history.push(`/edit-product/${id}/`)
     }
     return (
-        <div>
+        <div style={{
+            marginTop: '6rem'
+        }}>
             {contextHolder}
             {/* Modal Start*/}
             <div>
