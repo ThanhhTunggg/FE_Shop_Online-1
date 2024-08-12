@@ -231,7 +231,7 @@ svg {
 }
 
 .slideshow-container {
-  width: auto;
+  width: 100%;
   /* Chiều rộng của slideshow */
   height: fit-content;
   /* Chiều cao của slideshow */

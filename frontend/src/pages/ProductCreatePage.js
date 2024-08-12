@@ -54,6 +54,7 @@ const ProductCreatePage = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [items, setItems] = useState([]);
+    const [showAddPro, setShowAddPro] = useState(false);
 
     useEffect(() => {
         if (!userInfo) {
@@ -107,9 +108,10 @@ const ProductCreatePage = () => {
     }
 
     const onSubmit = async (e) => {
+        setShowAddPro(true)
         e.preventDefault();
 
-        if(items.length > 0){
+        if (items.length > 0) {
             const data1 = await postFile(file1);
             const data2 = await postFile(file2);
             const data3 = await postFile(file3);
@@ -134,7 +136,7 @@ const ProductCreatePage = () => {
                 productDetails: items
             }
             dispatch(createProduct(form_data))
-        }else{
+        } else {
             alert('Vui lòng thêm 1 loại sản phẩm!')
         }
 
@@ -244,7 +246,8 @@ const ProductCreatePage = () => {
     }
 
     if (productCreationSuccess) {
-        alert("Product successfully created.")
+        // alert("Product successfully created.")
+        setShowAddPro(false)
         history.push(`/product/${product}/`)
         dispatch({
             type: CREATE_PRODUCT_RESET
@@ -265,150 +268,181 @@ const ProductCreatePage = () => {
     };
 
     return (
-        <div style={{
-            width: '100%',
-            backgroundColor: 'white',
-            borderRadius: '20px',
-            height: '90vh',
-            justifyContent: 'center',
-            padding: '2rem',
-            overflowY: 'auto',
-            boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px'
-        }}>
-            {/* {productCreationError && <Message variant='danger'>{productCreationError.image[0]}</Message>} */}
-            <h3 style={{
-                textAlign: 'center'
-            }}>Thêm sản phẩm mới</h3>
-            <Form onSubmit={onSubmit}>
+        <>
+            {showAddPro && <div style={{
+                position: 'fixed',
+                backgroundColor: 'rgba(4, 15, 19, 0.5)',
+                width: '100%',
+                height: '100vh',
+                zIndex: 30,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <svg xmlns="http://www.w3.org/2000/svg" style={{
+                    width: '100px',
+                    height: '100px',
+                    margin: '20px',
+                    display: 'inline-block'
+                }} version="1.1" id="L9" x="0px" y="0px"
+                    viewBox="0 0 100 100" enableBackground="new 0 0 100 100" xmlSpace="preserve">
+                    <path fill="#fff" d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                        <animateTransform
+                            attributeName="transform"
+                            attributeType="XML"
+                            type="rotate"
+                            dur="1s"
+                            from="0 50 50"
+                            to="360 50 50"
+                            repeatCount="indefinite" />
+                    </path>
+                </svg>
+            </div>}
 
-                <Form.Group controlId='name'>
-                    <Form.Label>
-                        <b>
-                            Tên sản phẩm
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        required
-                        autoFocus={true}
-                        type="text"
-                        value={name}
-                        placeholder="Nhập tên sản phẩm"
-                        className='inputAddNewProduct'
-                        onChange={(e) => setName(e.target.value)}
-                    >
-                    </Form.Control>
-                </Form.Group>
+            <div style={{
+                width: '100%',
+                backgroundColor: 'white',
+                borderRadius: '20px',
+                height: '90vh',
+                justifyContent: 'center',
+                padding: '2rem',
+                overflowY: 'auto',
+                boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px'
+            }}>
+                {/* {productCreationError && <Message variant='danger'>{productCreationError.image[0]}</Message>} */}
+                <h3 style={{
+                    textAlign: 'center'
+                }}>Thêm sản phẩm mới</h3>
+                <Form onSubmit={onSubmit}>
 
-                <Form.Group controlId='description'>
-                    <Form.Label>
-                        <b>
-                            Mô tả sản phẩm
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        required
-                        as="textarea"
-                        rows={3}
-                        value={description}
-                        className='inputAddNewProduct'
-                        placeholder="Nhập mô tả sản phẩm"
-                        onChange={(e) => setDescription(e.target.value)}
-                    >
-                    </Form.Control>
-                </Form.Group>
-                <div>
-                    <div style={{
-                        border: '1px solid grey',
-                        width: '50%',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        borderRadius: '.5rem .5rem 0 0',
-                        padding: '.5rem',
-                        textAlign: 'center',
-                        backgroundColor: '#d0f1f6'
-                    }}>
-                        <p style={{
-                            width: '20%',
-                            borderRight: '1px solid grey'
-                        }}>Tên</p>
-                        <p style={{
-                            width: '20%',
-                            borderRight: '1px solid grey'
-                        }}>Giá</p>
-                        <p style={{
-                            width: '20%',
-                            borderRight: '1px solid grey'
-                        }}>Số lượng</p>
-                        <p style={{
-                            width: '20%',
-                        }}></p>
-                    </div>
-                    {items.map((item, index) => (
-                        <div key={index} style={{
+                    <Form.Group controlId='name'>
+                        <Form.Label>
+                            <b>
+                                Tên sản phẩm
+                            </b>
+                        </Form.Label>
+                        <Form.Control
+                            required
+                            autoFocus={true}
+                            type="text"
+                            value={name}
+                            placeholder="Nhập tên sản phẩm"
+                            className='inputAddNewProduct'
+                            onChange={(e) => setName(e.target.value)}
+                        >
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId='description'>
+                        <Form.Label>
+                            <b>
+                                Mô tả sản phẩm
+                            </b>
+                        </Form.Label>
+                        <Form.Control
+                            required
+                            as="textarea"
+                            rows={3}
+                            value={description}
+                            className='inputAddNewProduct'
+                            placeholder="Nhập mô tả sản phẩm"
+                            onChange={(e) => setDescription(e.target.value)}
+                        >
+                        </Form.Control>
+                    </Form.Group>
+                    <div>
+                        <div style={{
                             border: '1px solid grey',
                             width: '50%',
                             display: 'flex',
                             justifyContent: 'space-between',
-                            padding: '.5rem'
+                            borderRadius: '.5rem .5rem 0 0',
+                            padding: '.5rem',
+                            textAlign: 'center',
+                            backgroundColor: '#d0f1f6'
                         }}>
                             <p style={{
                                 width: '20%',
                                 borderRight: '1px solid grey'
-                            }}>{item.productDetailName}</p>
+                            }}>Tên</p>
                             <p style={{
                                 width: '20%',
                                 borderRight: '1px solid grey'
-                            }}>{item.productDetailPrice}</p>
+                            }}>Giá</p>
                             <p style={{
                                 width: '20%',
                                 borderRight: '1px solid grey'
-                            }}>{item.detailStock}</p>
-                            <button style={{
-                                width: '19%',
-                                border: 'none',
-                                backgroundColor: '#e05966',
-                                color: 'white',
-                                borderRadius: '.5rem',
-                                margin: '0 .5%'
-                            }} onClick={() => handleDelete(index)}>Delete</button>
+                            }}>Số lượng</p>
+                            <p style={{
+                                width: '20%',
+                            }}></p>
                         </div>
-                    ))}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '70%' }}>
-                    <Form.Group controlId='nameDetail'>
-                        <Form.Label>
-                            <b>
-                                Loại sản phẩm
-                            </b>
-                        </Form.Label>
-                        <Form.Control
-                            autoFocus={true}
-                            type="text"
-                            value={detailName}
-                            placeholder="Nhập Loại sản phẩm"
-                            className='inputAddNewProduct'
-                            onChange={(e) => setDetailName(e.target.value)}
-                        >
-                        </Form.Control>
-                    </Form.Group>
+                        {items.map((item, index) => (
+                            <div key={index} style={{
+                                border: '1px solid grey',
+                                width: '50%',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                padding: '.5rem'
+                            }}>
+                                <p style={{
+                                    width: '20%',
+                                    borderRight: '1px solid grey'
+                                }}>{item.productDetailName}</p>
+                                <p style={{
+                                    width: '20%',
+                                    borderRight: '1px solid grey'
+                                }}>{item.productDetailPrice}</p>
+                                <p style={{
+                                    width: '20%',
+                                    borderRight: '1px solid grey'
+                                }}>{item.detailStock}</p>
+                                <button style={{
+                                    width: '19%',
+                                    border: 'none',
+                                    backgroundColor: '#e05966',
+                                    color: 'white',
+                                    borderRadius: '.5rem',
+                                    margin: '0 .5%'
+                                }} onClick={() => handleDelete(index)}>Delete</button>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '70%' }}>
+                        <Form.Group controlId='nameDetail'>
+                            <Form.Label>
+                                <b>
+                                    Loại sản phẩm
+                                </b>
+                            </Form.Label>
+                            <Form.Control
+                                autoFocus={true}
+                                type="text"
+                                value={detailName}
+                                placeholder="Nhập Loại sản phẩm"
+                                className='inputAddNewProduct'
+                                onChange={(e) => setDetailName(e.target.value)}
+                            >
+                            </Form.Control>
+                        </Form.Group>
 
-                    <Form.Group controlId='price'>
-                        <Form.Label>
-                            <b>
-                                Giá
-                            </b>
-                        </Form.Label>
-                        <Form.Control
-                            type="number"
-                            value={detailPrice}
-                            placeholder="Nhập giá VND"
-                            className='detailPrice'
-                            onChange={(e) => setDetailPrice(e.target.value)}
-                        >
-                        </Form.Control>
-                    </Form.Group>
+                        <Form.Group controlId='price'>
+                            <Form.Label>
+                                <b>
+                                    Giá
+                                </b>
+                            </Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={detailPrice}
+                                placeholder="Nhập giá VND"
+                                className='detailPrice'
+                                onChange={(e) => setDetailPrice(e.target.value)}
+                            >
+                            </Form.Control>
+                        </Form.Group>
 
-                    {/* <div>
+                        {/* <div>
                         <Form.Group controlId='priceDiscount'>
                             <Form.Label>
                                 <b>
@@ -425,208 +459,214 @@ const ProductCreatePage = () => {
                             </Form.Control>
                         </Form.Group>
                     </div> */}
-                    <Form.Group controlId='priceDiscount'>
+                        <Form.Group controlId='priceDiscount'>
+                            <Form.Label>
+                                <b>
+                                    Số lượng hàng
+                                </b>
+                            </Form.Label>
+                            <Form.Control
+                                type="number"
+                                pattern="[0-9]+(\.[0-9]{1,2})?%?"
+                                value={stock}
+                                placeholder="Nhập số luợng hàng"
+                                className='inputAddNewProduct'
+                                step="1"
+                                onChange={(e) => setStock(e.target.value)}
+                            >
+                            </Form.Control>
+                        </Form.Group>
+
+                        <p style={{
+                            height: '50px',
+                            padding: '.5rem 3rem',
+                            border: 'none',
+                            borderRadius: '.5rem',
+                            backgroundColor: '#1a71ff',
+                            color: 'white',
+                            margin: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }} onClick={() => handleAddDetail()}>Thêm</p>
+                    </div>
+                    <Form.Group controlId="category">
                         <Form.Label>
-                            <b>
-                                Số lượng hàng
-                            </b>
+                            <b>Loại mặt hàng</b>
                         </Form.Label>
                         <Form.Control
-                            type="number"
-                            pattern="[0-9]+(\.[0-9]{1,2})?%?"
-                            value={stock}
-                            placeholder="Nhập số luợng hàng"
+                            as="select"
+                            required
                             className='inputAddNewProduct'
-                            step="1"
-                            onChange={(e) => setStock(e.target.value)}
+                            value={category}
+                            onChange={(e) => setcategory(e.target.value)}
                         >
+                            <option value="">Select a category</option>
+                            {categoryList.length > 0 ? (
+                                categoryList.map((cat) => (
+                                    <option key={cat.categoryId} value={cat.categoryId}>
+                                        {cat.categoryName}
+                                    </option>
+                                ))
+                            ) : (
+                                <option value="" disabled>
+                                    <option value="">Chọn loại mặt hàng</option>
+                                </option>
+                            )}
                         </Form.Control>
                     </Form.Group>
 
-                    <button style={{
-                        height: '50px',
-                        padding: '.5rem 3rem',
-                        border: 'none',
-                        borderRadius: '.5rem',
-                        backgroundColor: '#1a71ff',
-                        color: 'white'
-                    }} onClick={() => handleAddDetail()}>Thêm</button>
-                </div>
-                <Form.Group controlId="category">
-                    <Form.Label>
-                        <b>Loại mặt hàng</b>
-                    </Form.Label>
-                    <Form.Control
-                        as="select"
-                        required
-                        className='inputAddNewProduct'
-                        value={category}
-                        onChange={(e) => setcategory(e.target.value)}
-                    >
-                        <option value="">Select a category</option>
-                        {categoryList.length > 0 ? (
-                            categoryList.map((cat) => (
-                                <option key={cat.categoryId} value={cat.categoryId}>
-                                    {cat.categoryName}
-                                </option>
-                            ))
-                        ) : (
-                            <option value="" disabled>
-                                <option value="">Chọn loại mặt hàng</option>
-                            </option>
-                        )}
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId="imageUpload">
-                    <Form.Label>
-                        <b>Tải ảnh</b>
-                    </Form.Label>
-                </Form.Group>
-                <div style={{
-                    display: 'flex',
-                }}>
-                    {images.map((image, index) => (
-                        <div key={index} xs={6} md={4} lg={3} className="mb-3"
-                            style={{
-                                width: '18%',
-                                marginRight: '.1rem',
-                            }}>
-                            <div className="image-preview">
-                                <img
-                                    src={image.preview}
-                                    alt={`Preview ${index + 1}`}
-                                    style={{ width: '100%', height: '100px', border: '1px solid black' }}
-                                />
-                                <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleRemoveImage(index)}
-                                    className="mt-2"
-                                >
-                                    Remove
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div style={{
-                    display: 'flex',
-                    width: '50%',
-                    justifyContent: 'space-evenly'
-                }}>
                     <Form.Group controlId="imageUpload">
-                        <div className="file-upload-container">
-                            <Form.Control
-                                type="file"
-                                required
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                disabled={images.length >= 1}
-                            />
-                            {url1 ? (
-                                <img src={url1} alt="Uploaded" width={'100px'} className="uploaded-image" />
-                            ) : (
-                                <div className="file-upload-text">
-                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
-                                </div>
-                            )}
-                        </div>
+                        <Form.Label>
+                            <b>Tải ảnh</b>
+                        </Form.Label>
                     </Form.Group>
-
-                    <Form.Group controlId="imageUpload">
-                        <div className="file-upload-container">
-                            <Form.Control
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange2}
-                                disabled={images.length >= 1}
-                            />
-                            {url2 ? (
-                                <img src={url2} alt="Uploaded" width={'100px'} className="uploaded-image" />
-                            ) : (
-                                <div className="file-upload-text">
-                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
-                                </div>
-                            )}
-                        </div>
-                    </Form.Group>
-
-                    <Form.Group controlId="imageUpload">
-                        <div className="file-upload-container">
-                            <Form.Control
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange3}
-                                disabled={images.length >= 1}
-                            />
-                            {url3 ? (
-                                <img src={url3} alt="Uploaded" width={'100px'} className="uploaded-image" />
-                            ) : (
-                                <div className="file-upload-text">
-                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
-                                </div>
-                            )}
-                        </div>
-                    </Form.Group>
-
-                    <Form.Group controlId="imageUpload">
-                        <div className="file-upload-container">
-                            <Form.Control
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange4}
-                                disabled={images.length >= 1}
-                            />
-                            {url4 ? (
-                                <img src={url4} alt="Uploaded" width={'100px'} className="uploaded-image" />
-                            ) : (
-                                <div className="file-upload-text">
-                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
-                                </div>
-                            )}
-                        </div>
-                    </Form.Group>
-
-                    <Form.Group controlId="imageUpload">
-                        <div className="file-upload-container">
-                            <Form.Control
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange5}
-                                disabled={images.length >= 1}
-                            />
-                            {url5 ? (
-                                <img src={url5} alt="Uploaded" width={'100px'} className="uploaded-image" />
-                            ) : (
-                                <div className="file-upload-text">
-                                    {image ? 'Tải ảnh' : 'Tải ảnh'}
-                                </div>
-                            )}
-                        </div>
-                    </Form.Group>
-                </div>
-
-
-                <button type="submit" class="btn btn-success mr-4"
-                    style={{
-                        borderRadius: '.5rem',
-                        padding: '.5rem 2rem'
+                    <div style={{
+                        display: 'flex',
                     }}>
-                    Thêm sản phẩm
-                </button>
-                <button type="submit" class="btn btn-danger"
-                    style={{
-                        borderRadius: '.5rem',
-                        padding: '.5rem 2rem'
-                    }}
-                    onClick={() => history.push("/")}
-                >
-                    Huỷ
-                </button>
-            </Form >
-        </div >
+                        {images.map((image, index) => (
+                            <div key={index} xs={6} md={4} lg={3} className="mb-3"
+                                style={{
+                                    width: '18%',
+                                    marginRight: '.1rem',
+                                }}>
+                                <div className="image-preview">
+                                    <img
+                                        src={image.preview}
+                                        alt={`Preview ${index + 1}`}
+                                        style={{ width: '100%', height: '100px', border: '1px solid black' }}
+                                    />
+                                    <Button
+                                        variant="danger"
+                                        size="sm"
+                                        onClick={() => handleRemoveImage(index)}
+                                        className="mt-2"
+                                    >
+                                        Remove
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div style={{
+                        display: 'flex',
+                        width: '50%',
+                        justifyContent: 'space-evenly'
+                    }}>
+                        <Form.Group controlId="imageUpload">
+                            <div className="file-upload-container">
+                                <Form.Control
+                                    type="file"
+                                    required
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    disabled={images.length >= 1}
+                                />
+                                {url1 ? (
+                                    <img src={url1} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                                ) : (
+                                    <div className="file-upload-text">
+                                        {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                    </div>
+                                )}
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group controlId="imageUpload">
+                            <div className="file-upload-container">
+                                <Form.Control
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange2}
+                                    disabled={images.length >= 1}
+                                />
+                                {url2 ? (
+                                    <img src={url2} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                                ) : (
+                                    <div className="file-upload-text">
+                                        {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                    </div>
+                                )}
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group controlId="imageUpload">
+                            <div className="file-upload-container">
+                                <Form.Control
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange3}
+                                    disabled={images.length >= 1}
+                                />
+                                {url3 ? (
+                                    <img src={url3} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                                ) : (
+                                    <div className="file-upload-text">
+                                        {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                    </div>
+                                )}
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group controlId="imageUpload">
+                            <div className="file-upload-container">
+                                <Form.Control
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange4}
+                                    disabled={images.length >= 1}
+                                />
+                                {url4 ? (
+                                    <img src={url4} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                                ) : (
+                                    <div className="file-upload-text">
+                                        {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                    </div>
+                                )}
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group controlId="imageUpload">
+                            <div className="file-upload-container">
+                                <Form.Control
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange5}
+                                    disabled={images.length >= 1}
+                                />
+                                {url5 ? (
+                                    <img src={url5} alt="Uploaded" width={'100px'} className="uploaded-image" />
+                                ) : (
+                                    <div className="file-upload-text">
+                                        {image ? 'Tải ảnh' : 'Tải ảnh'}
+                                    </div>
+                                )}
+                            </div>
+                        </Form.Group>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-success mr-4"
+                        style={{
+                            borderRadius: '.5rem',
+                            padding: '.5rem 2rem'
+                        }}>
+                        Thêm sản phẩm
+                    </button>
+                    <button type="submit" class="btn btn-danger"
+                        style={{
+                            borderRadius: '.5rem',
+                            padding: '.5rem 2rem'
+                        }}
+                        onClick={() => history.push("/")}
+                    >
+                        Huỷ
+                    </button>
+                </Form >
+            </div >
+        </>
     )
 }
 

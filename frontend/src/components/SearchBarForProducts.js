@@ -20,10 +20,10 @@ function SearchBarForProducts() {
                 <span
                     style={{ display: "flex",
                     borderRadius: '3px',
-                    backgroundColor: 'white',
+                    backgroundColor: '#e7e0eb',
                     justifyContent: 'space-between',
-                    padding: '3px 5px',
-                    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 10px'
+                    padding: '5px 5px',
+                    // boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 10px'
                      }}
                     className=""
                 >
@@ -33,7 +33,8 @@ function SearchBarForProducts() {
                             outline: '0px solid orange',
                             width: '90%',
                             border: 'none',
-                            padding: '0 10px'
+                            padding: '0 10px',
+                            backgroundColor: '#e7e0eb'
                         }}
                         type="text"
                         value={searchTerm}

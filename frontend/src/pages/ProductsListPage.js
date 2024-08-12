@@ -145,7 +145,7 @@ function ProductsListPage() {
                             marginTop: '1rem',
                             // height: '30vh',
                             overflow: 'hidden',
-                            padding: '1rem',
+                            padding: '0',
                             boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px'
                         }}>
                             <div className="slideshow-container">
@@ -293,7 +293,7 @@ function ProductsListPage() {
                                     }}>
                                         {productsSale.map((product, idx) => (
                                             <div key={idx} style={{
-                                                width: 'calc(100%/7)',
+                                                width: 'calc(100%/8)',
                                                 margin: '0 .5rem',
                                             }}>
                                                 <ProductSale product={product} />
@@ -322,8 +322,8 @@ function ProductsListPage() {
                     }}>
                         {products.length === 0 ? showNothingMessage() : displayedProducts.map((product, idx) => (
                             <div key={idx} style={{
-                                width: 'calc(100%/7)',
-                                margin: '0 .5rem',
+                                width: 'calc(100%/8)',
+                                margin: '0 .2rem',
                             }}>
                                 <Product product={product} />
                             </div>
