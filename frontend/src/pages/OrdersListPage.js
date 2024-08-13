@@ -59,6 +59,15 @@ function OrdersListPage() {
             });
     }
 
+    const HandleCancel = (id) => {
+        axios.post(`${apiRoot}Status/${id}/5`)
+            .then(res => {
+                GetAllOrdersUsID()
+            }).catch(err => {
+                console.log(err);
+            })
+    }
+
     if (userInfo && tokenError === "Request failed with status code 401") {
         alert("Session expired, please login again.")
         dispatch(logout())
@@ -115,7 +124,7 @@ function OrdersListPage() {
                                     padding: '.5rem 1rem',
                                     margin: '0 15%',
                                     borderRadius: '.5rem .5rem 0 0 ',
-                                    backgroundColor: orderObj.orders.orderStatus === 5 && '#ffa0ac'
+                                    backgroundColor: orderObj.orders.orderStatus === 5 ? '#ffa0ac' : '#b1d266'
                                 }}>
                                     <b>{new Date(orderObj.orders.orderDate).toLocaleDateString()}</b>
                                     {orderObj.orders.orderStatus === 1 && <b>Đã đặt</b>}
@@ -128,7 +137,7 @@ function OrdersListPage() {
                                         backgroundColor: '#ff6075',
                                         borderRadius: '.5rem',
                                         padding: '.5rem 2rem'
-                                    }}><b>Huỷ</b></button>}
+                                    }} onClick={() => HandleCancel(orderObj.orders.orderId)}><b>Huỷ</b></button>}
                                 </div>
                                 <div style={{
                                     borderRadius: '0 0 .5rem .5rem',

@@ -114,7 +114,6 @@ const CheckoutPage = ({ match }) => {
 
         setItems(newItems);
 
-
         const config = {
             headers: {
                 "Content-Type": "application/json",

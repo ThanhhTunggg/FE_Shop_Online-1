@@ -244,7 +244,6 @@ svg {
   height: 100%;
   object-fit: cover;
   /* Đảm bảo hình ảnh phù hợp với kích thước container */
-  border-radius: 10px;
   /* Tùy chọn: Thêm viền tròn nếu muốn */
   transition: opacity 1s ease-in-out;
   /* Hiệu ứng chuyển đổi mượt mà */
